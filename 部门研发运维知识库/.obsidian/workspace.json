@@ -4,17 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "15952a123cf2064c",
+        "id": "176ef09a6b1b7e7b",
         "type": "tabs",
         "children": [
           {
-            "id": "216602bd1116eadc",
+            "id": "6bea3a9c74034d76",
             "type": "leaf",
             "state": {
-              "type": "graph",
+              "type": "empty",
               "state": {},
-              "icon": "lucide-git-fork",
-              "title": "关系图谱"
+              "icon": "lucide-file",
+              "title": "新标签页"
             }
           }
         ]
@@ -182,6 +182,7 @@
   },
   "active": "a80bc0ba4f7fa04b",
   "lastOpenFiles": [
+    "00_说明/AI文档生成规则使用说明.md",
     "index.md",
     "01_部署手册/Linux服务部署步骤.md",
     "02_故障FAQ库/数据库连接超时排查.md",

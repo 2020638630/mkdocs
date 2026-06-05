@@ -341,7 +341,7 @@ private void executeEsWriteWithRetry(BulkRequest bulkRequest) {
 
 ---
 
-## :material-summary: 八、总结
+## :material-clipboard-text: 八、总结
 
 | 环节 | 结论 |
 |------|------|

@@ -43,7 +43,7 @@
 
 ---
 
-## :material-architecture: 二、架构设计
+## :material-sitemap: 二、架构设计
 
 ### 2.1 整体架构
 

@@ -96,7 +96,7 @@ redis-cli -p 16379 -a <password> INFO memory
 
 ---
 
-## :material-root: 三、根因分析
+## :material-magnify: 三、根因分析
 
 ```
 系统内存 31GB
@@ -438,7 +438,7 @@ redisTemplate.opsForValue().set(CacheKey.TENANT_CATALOGSMAP + tenantId, tenantCa
 
 ---
 
-## :material-summary: 十一、总结
+## :material-clipboard-text: 十一、总结
 
 | 问题 | 原因 | 解决方案 |
 |------|------|---------|

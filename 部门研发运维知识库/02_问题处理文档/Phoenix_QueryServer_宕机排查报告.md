@@ -95,7 +95,7 @@ Killed process 25869 (java), anon-rss: 12163388kB (~11.6GB)
 
 ---
 
-## :material-root: 根因分析
+## :material-magnify: 根因分析
 
 ### OOM Killer 机制
 
@@ -185,7 +185,7 @@ tail -f /tmp/phoenix/phoenix-root-queryserver.log
 
 ---
 
-## :material-summary: 总结
+## :material-clipboard-text: 总结
 
 | 环节 | 结论 |
 |------|------|

@@ -251,7 +251,7 @@ nohup hdfs balancer -threshold 10 > /tmp/hdfs-balancer.log 2>&1 &
 
 ---
 
-## :material-chart-success: 四、最终成果
+## :material-flag-checkered: 四、最终成果
 
 ### 清理前后磁盘对比
 

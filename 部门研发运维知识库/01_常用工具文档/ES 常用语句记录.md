@@ -210,7 +210,7 @@ GET /goods-info/_count
 
 ---
 
-## :material-logic: 布尔查询
+## :material-filter-variant: 布尔查询
 
 ### 查询缺失某字段的文档
 
@@ -379,7 +379,7 @@ GET /goods-info/_search
 
 ---
 
-## :material-logic-gate: 布尔查询操作符
+## :material-filter-variant: 布尔查询操作符
 
 | 操作符 | 说明 | SQL 对应 |
 | :--- | :--- | :--- |

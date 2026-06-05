@@ -96,7 +96,7 @@ cat /boss/softlog/pricemonitor/<service-name>/$(date +%Y-%m-%d).log
 
 ---
 
-## :material-gear: Deployment/Service 相关
+## :material-cog: Deployment/Service 相关
 
 ```bash
 # 查看 deployment
