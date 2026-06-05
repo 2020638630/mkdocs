@@ -40,37 +40,37 @@ hide:
 
 <div class="grid cards" markdown>
 
--   :material-numeric-0-box-outline:{ .lg .middle } __[首页说明](00_首页说明/)__
+-   :material-numeric-0-box-outline:{ .lg .middle } __[首页说明](00_说明/index.md)__
 
     ---
 
     了解知识库的使用规范、文档标准、目录结构及贡献指南。
 
--   :material-numeric-1-box-outline:{ .lg .middle } __[常用工具文档](01_常用工具文档/)__
+-   :material-numeric-1-box-outline:{ .lg .middle } __[常用工具文档](01_常用工具文档/index.md)__
 
     ---
 
     常用工具的使用说明、配置指南及最佳实践。
 
--   :material-numeric-2-box-outline:{ .lg .middle } __[问题处理文档](02_问题处理文档/)__
+-   :material-numeric-2-box-outline:{ .lg .middle } __[问题处理文档](02_问题处理文档/index.md)__
 
     ---
 
     常见故障现象、根因分析、排查步骤与解决方案，助力快速定位与恢复。
 
--   :material-numeric-3-box-outline:{ .lg .middle } __[项目技术架构文档](03_项目技术架构文档/)__
+-   :material-numeric-3-box-outline:{ .lg .middle } __[项目技术架构文档](03_项目技术架构文档/index.md)__
 
     ---
 
     各项目的技术架构设计、模块说明及技术选型。
 
--   :material-numeric-4-box-outline:{ .lg .middle } __[研发内部设计](04_研发内部设计/)__
+-   :material-numeric-4-box-outline:{ .lg .middle } __[研发内部设计](04_研发内部设计/index.md)__
 
     ---
 
     研发内部设计方案、数据库脚本及技术实现细节。
 
--   :material-numeric-9-box-outline:{ .lg .middle } __[文档模板](99_文档模板/)__
+-   :material-numeric-9-box-outline:{ .lg .middle } __[文档模板](99_文档模板/index.md)__
 
     ---
 
