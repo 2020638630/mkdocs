@@ -782,6 +782,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#50" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.0 生成文档的安全红线（必读）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#51" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2639,6 +2650,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#50" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.0 生成文档的安全红线（必读）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#51" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2829,8 +2851,8 @@
 </tr>
 <tr>
 <td>五、注意事项</td>
-<td>常见错误和避坑指南</td>
-<td>避免生成错误文档</td>
+<td>常见错误、安全规范和避坑指南</td>
+<td><strong>含密码安全红线规则</strong></td>
 </tr>
 </tbody>
 </table>
@@ -2982,6 +3004,49 @@
 </ol>
 <hr />
 <h2 id="_5">五、常见问题<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="50">5.0 生成文档的安全红线（必读）<a class="headerlink" href="#50" title="Permanent link">&para;</a></h3>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5M11 7h2v6h-2m0 2h2v2h-2"/></svg></span> <strong>最重要规则：禁止在任何文档中输出真实密码！</strong></p>
+<p>AI 生成文档时必须遵守以下安全规则：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">敏感类型</th>
+<th style="text-align: left;">禁止行为</th>
+<th style="text-align: left;">正确做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">数据库密码</td>
+<td style="text-align: left;">在 JDBC URL 中写真实密码</td>
+<td style="text-align: left;">使用 <code>your_password</code> 占位</td>
+</tr>
+<tr>
+<td style="text-align: left;">Redis 密码</td>
+<td style="text-align: left;">在配置文件中写真实密码</td>
+<td style="text-align: left;">使用 <code>your_redis_password</code> 占位</td>
+</tr>
+<tr>
+<td style="text-align: left;">API Token/Key</td>
+<td style="text-align: left;">在接口示例中暴露真实 Token</td>
+<td style="text-align: left;">使用 <code>your_api_token</code> 或 <code>sk-xxxx</code> 占位</td>
+</tr>
+<tr>
+<td style="text-align: left;">生产环境 IP</td>
+<td style="text-align: left;">在排查报告中暴露真实 IP</td>
+<td style="text-align: left;">使用 <code>10.x.x.x</code> 或 <code>192.168.x.x</code> 脱敏</td>
+</tr>
+<tr>
+<td style="text-align: left;">证书密钥</td>
+<td style="text-align: left;">在文档中粘贴证书内容</td>
+<td style="text-align: left;">仅说明证书类型，不粘贴内容</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition danger">
+<p class="admonition-title">安全警告</p>
+<p>知识库使用 GitHub Pages 公开托管，若密码被提交到仓库，将<strong>永久记录</strong>在 Git 历史中，即使后续删除也无法清除，存在严重安全隐患。</p>
+</div>
 <h3 id="51">5.1 生成的文档有乱码怎么办？<a class="headerlink" href="#51" title="Permanent link">&para;</a></h3>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 13h-2V7h2m0 10h-2v-2h2M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></svg></span> <strong>原因</strong></p>
 <p>图标语法使用了中文冒号导致渲染错误。</p>
