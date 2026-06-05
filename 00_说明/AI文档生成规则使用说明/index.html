@@ -669,7 +669,7 @@
   <a href="#321" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2.1 文档头部信息
+        3.2.1 文档头部信息（标签化元数据）
       
     </span>
   </a>
@@ -1365,6 +1365,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/Phoenix_QueryServer_Namespace_Mapping_%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phoenix QueryServer Namespace Mapping 异常排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/Phoenix_QueryServer_%E5%AE%95%E6%9C%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
         
   
@@ -1862,35 +1890,7 @@
   <span class="md-ellipsis">
     
   
-    华能消费帮扶独立租户代码修改说明
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E9%9C%80%E6%B1%82%E8%BF%BD%E8%B8%AA%E8%AE%B0%E5%BD%95/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    华能消费帮扶独立租户需求追踪记录
+    华能消费帮扶独立租户设计方案
   
 
     
@@ -2537,7 +2537,7 @@
   <a href="#321" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2.1 文档头部信息
+        3.2.1 文档头部信息（标签化元数据）
       
     </span>
   </a>
@@ -2812,12 +2812,13 @@
 <hr />
 <h2 id="_1">一、规则文件说明<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <h3 id="11">1.1 文件位置<a class="headerlink" href="#11" title="Permanent link">&para;</a></h3>
-<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 9V3.5L18.5 9M6 2c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg></span> <strong>规则文件路径</strong>: <code>D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md</code></p>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 9V3.5L18.5 9M6 2c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/></svg></span> <strong>规则文件路径</strong>: <code>D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc</code></p>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 9h-2V7h2m0 10h-2v-6h2m-1-9A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></svg></span> <strong>作用</strong></p>
 <p>该规则文件用于指导AI在生成知识库文档时：
 1. 自动归类到正确的文件夹
-2. 应用MkDocs Material美化规范
-3. 确保文档格式统一、美观</p>
+2. 添加标准化标签头部（文档类型、时间、维护人、<strong>标签</strong>）
+3. 应用MkDocs Material美化规范
+4. 确保文档格式统一、美观、可检索</p>
 <h3 id="12">1.2 规则内容概览<a class="headerlink" href="#12" title="Permanent link">&para;</a></h3>
 <p>规则文件包含以下核心内容：</p>
 <table>
@@ -2840,19 +2841,34 @@
 <td>确保文档美观、专业</td>
 </tr>
 <tr>
+<td>　2.1 标签化元数据</td>
+<td>5种文档类型的标准化头部格式</td>
+<td><strong>所有文档必选标签字段</strong></td>
+</tr>
+<tr>
+<td>　2.2 标签命名规范</td>
+<td>标签选取原则与格式规则</td>
+<td>3~6个标签，英文逗号分隔</td>
+</tr>
+<tr>
+<td>　2.3 图标使用规范</td>
+<td>22个常用场景图标速查表</td>
+<td>英文冒号，禁止中文冒号</td>
+</tr>
+<tr>
 <td>三、文档生成流程</td>
 <td>AI生成文档的标准流程</td>
-<td>规范化生成过程</td>
+<td>含提取标签关键词步骤</td>
 </tr>
 <tr>
 <td>四、示例模板</td>
-<td>各类文档的模板</td>
-<td>快速生成标准文档</td>
+<td>4种文档类型的完整模板</td>
+<td>工具手册/故障排查/功能设计/部署指南</td>
 </tr>
 <tr>
 <td>五、注意事项</td>
-<td>常见错误、安全规范和避坑指南</td>
-<td><strong>含密码安全红线规则</strong></td>
+<td>安全红线、常见错误、存量文档规范调整</td>
+<td><strong>含密码安全红线 + 5.5存量文档批量规范化流程</strong></td>
 </tr>
 </tbody>
 </table>
@@ -2861,11 +2877,11 @@
 <h3 id="21-1">2.1 方式1：在对话中引用规则<a class="headerlink" href="#21-1" title="Permanent link">&para;</a></h3>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3c5.5 0 10 3.58 10 8s-4.5 8-10 8c-1.24 0-2.43-.18-3.53-.5C5.55 21 2 21 2 21c2.33-2.33 2.7-3.9 2.75-4.5C3.05 15.07 2 13.13 2 11c0-4.42 4.5-8 10-8"/></svg></span> <strong>操作步骤</strong></p>
 <p>在CodeBuddy对话中，直接引用规则文件：</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>请按照 D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md 
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>请按照 D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc 
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>中的规则，帮我生成一份【文档标题】文档，并保存到【目录路径】
 </code></pre></div>
 <p><strong>示例</strong>：</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>请按照 D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md 
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>请按照 D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc 
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>中的规则，帮我生成一份&quot;Redis缓存优化方案&quot;文档，
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>并保存到 D:\Work\Dev-KB\部门研发运维知识库\04_研发内部设计\ 目录下
 </code></pre></div>
@@ -2885,12 +2901,13 @@
 <p><strong>指令名称</strong>: <code>生成知识库文档</code></p>
 <p><strong>指令内容</strong>:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>请按照以下规则生成文档：
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>1. 读取规则文件：D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>1. 读取规则文件：D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>2. 根据文档内容归类到正确的知识库目录
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>3. 应用MkDocs Material美化规范
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>4. 生成后保存到指定路径
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>文档需求：【在这里描述你要生成的文档内容】
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>3. 添加标准化标签头部（文档类型、时间、维护人、标签）
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>4. 应用MkDocs Material美化规范
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>5. 生成后保存到指定路径
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>文档需求：【在这里描述你要生成的文档内容】
 </code></pre></div></p>
 <hr />
 <h2 id="_3">三、规则详解<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
@@ -2910,14 +2927,39 @@
 </code></pre></div>
 <h3 id="32">3.2 文档美化规范<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m20.71 4.63-1.34-1.34c-.37-.39-1.02-.39-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.04 0-1.41M7 14a3 3 0 0 0-3 3c0 1.31-1.16 2-2 2 .92 1.22 2.5 2 4 2a4 4 0 0 0 4-4 3 3 0 0 0-3-3"/></svg></span> <strong>核心规范</strong></p>
-<h4 id="321">3.2.1 文档头部信息<a class="headerlink" href="#321" title="Permanent link">&para;</a></h4>
+<h4 id="321">3.2.1 文档头部信息（标签化元数据）<a class="headerlink" href="#321" title="Permanent link">&para;</a></h4>
+<p>每个文档标题后必须添加标准化标签头部，所有字段用 <code>|</code> 分隔，<strong>标签字段为必选</strong>。</p>
+<p><strong>通用格式</strong>（部署指南、使用指南类）：</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gh"># 文档标题</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>:material-file-document-edit: <span class="gs">**文档类型**</span>: 类型说明 |
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>:material-account-clock: <span class="gs">**更新时间**</span>: YYYY-MM-DD |
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>:material-account: <span class="gs">**维护人**</span>: 姓名 |
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>:material-tag: <span class="gs">**标签**</span>: 标签1, 标签2
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>:material-tag: <span class="gs">**标签**</span>: 标签1, 标签2, 标签3
 </code></pre></div>
+<p><strong>故障排查类</strong> — 额外包含优先级和发生时间：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>:material-file-document-edit: <span class="gs">**文档类型**</span>: 故障排查 |
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>:material-alert-circle: <span class="gs">**优先级**</span>: 🔴 高 |
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>:material-account-clock: <span class="gs">**发生时间**</span>: YYYY-MM-DD |
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>:material-account: <span class="gs">**处理人**</span>: 研发团队 |
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>:material-tag: <span class="gs">**标签**</span>: 故障组件, 故障现象, 涉及服务
+</code></pre></div>
+<p><strong>工具手册类</strong>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>:material-file-document-edit: <span class="gs">**文档类型**</span>: 工具手册 |
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>:material-account-clock: <span class="gs">**更新时间**</span>: YYYY-MM-DD |
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>:material-account: <span class="gs">**维护人**</span>: 研发团队 |
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>:material-tag: <span class="gs">**标签**</span>: 组件名, 功能分类, 环境
+</code></pre></div>
+<p><strong>功能设计类</strong> — 可选增加涉及模块：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>:material-file-document-edit: <span class="gs">**文档类型**</span>: 功能设计 |
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>:material-api: <span class="gs">**涉及模块**</span>: 模块名 |
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>:material-account-clock: <span class="gs">**更新时间**</span>: YYYY-MM-DD |
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>:material-account: <span class="gs">**维护人**</span>: 研发团队 |
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>:material-tag: <span class="gs">**标签**</span>: 租户名, 功能分类, 技术方案
+</code></pre></div>
+<blockquote>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.5 7A1.5 1.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4 1.5 1.5 0 0 1 7 5.5 1.5 1.5 0 0 1 5.5 7m15.91 4.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.11 0-2 .89-2 2v7c0 .55.22 1.05.59 1.41l8.99 9c.37.36.87.59 1.42.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.56-.23-1.06-.59-1.42"/></svg></span> <strong>标签选取原则</strong>：技术关键字优先 → 项目/租户名 → 功能/模块名 → 问题/场景标识，每文档 3~6 个标签，英文逗号分隔。</p>
+</blockquote>
 <h4 id="322">3.2.2 图标使用<a class="headerlink" href="#322" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
@@ -2951,27 +2993,27 @@
 </tbody>
 </table>
 <h4 id="323">3.2.3 提示框<a class="headerlink" href="#323" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>!!! info &quot;信息标题&quot;
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    信息内容
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>!!! warning &quot;警告&quot;
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    警告内容
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>!!! tip &quot;提示&quot;
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    提示内容
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>!!! info &quot;信息标题&quot;
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    信息内容
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>!!! warning &quot;警告&quot;
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    警告内容
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>!!! tip &quot;提示&quot;
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    提示内容
 </code></pre></div>
 <h4 id="324">3.2.4 可折叠内容<a class="headerlink" href="#324" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>??? example &quot;示例标题&quot;
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    折叠的内容
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>???+ abstract &quot;默认展开&quot;
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    默认展开的内容
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>??? example &quot;示例标题&quot;
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    折叠的内容
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>???+ abstract &quot;默认展开&quot;
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    默认展开的内容
 </code></pre></div>
 <hr />
 <h2 id="_4">四、示例场景<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <h3 id="41-1">4.1 场景1：生成工具使用手册<a class="headerlink" href="#41-1" title="Permanent link">&para;</a></h3>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 9H7V7h10m0 6H7v-2h10m-3 6H7v-2h7M12 3a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1m7 0h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2"/></svg></span> <strong>用户需求</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>请帮我生成一份&quot;MySQL慢查询优化指南&quot;，包含常用命令和排查方法
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>请帮我生成一份&quot;MySQL慢查询优化指南&quot;，包含常用命令和排查方法
 </code></pre></div>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5"/></svg></span> <strong>AI执行流程</strong></p>
 <ol>
@@ -2982,7 +3024,7 @@
 </ol>
 <h3 id="42-2">4.2 场景2：生成故障排查报告<a class="headerlink" href="#42-2" title="Permanent link">&para;</a></h3>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 9H7V7h10m0 6H7v-2h10m-3 6H7v-2h7M12 3a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1m7 0h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2"/></svg></span> <strong>用户需求</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>请帮我整理一份&quot;Redis内存溢出排查报告&quot;，包含问题现象、排查过程、解决方案
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>请帮我整理一份&quot;Redis内存溢出排查报告&quot;，包含问题现象、排查过程、解决方案
 </code></pre></div>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5"/></svg></span> <strong>AI执行流程</strong></p>
 <ol>
@@ -2993,7 +3035,7 @@
 </ol>
 <h3 id="43-3">4.3 场景3：生成功能设计文档<a class="headerlink" href="#43-3" title="Permanent link">&para;</a></h3>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 9H7V7h10m0 6H7v-2h10m-3 6H7v-2h7M12 3a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1m7 0h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2"/></svg></span> <strong>用户需求</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>请帮我写一份&quot;商品比价功能设计文档&quot;，包含需求背景、技术方案、接口设计
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>请帮我写一份&quot;商品比价功能设计文档&quot;，包含需求背景、技术方案、接口设计
 </code></pre></div>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5"/></svg></span> <strong>AI执行流程</strong></p>
 <ol>
@@ -3064,7 +3106,7 @@
 <h3 id="53">5.3 如何修改规则文件？<a class="headerlink" href="#53" title="Permanent link">&para;</a></h3>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 9h-2V7h2m0 10h-2v-6h2m-1-9A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></svg></span> <strong>修改方式</strong></p>
 <ol>
-<li>打开规则文件：<code>D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md</code></li>
+<li>打开规则文件：<code>D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc</code></li>
 <li>修改对应章节内容</li>
 <li>保存文件</li>
 <li>后续AI生成文档时会自动应用新规则</li>
@@ -3082,6 +3124,12 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>v1.1</td>
+<td>2026-06-05</td>
+<td>所有模板强制增加标签字段；新增标签命名规范(2.2)；新增部署指南模板(4.4)；完善图标速查表；新增存量文档规范调整说明(5.5)；统一图标命名</td>
+<td>AI Assistant</td>
+</tr>
 <tr>
 <td>v1.0</td>
 <td>2026-06-05</td>
@@ -3114,15 +3162,17 @@
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 9h5.5L13 3.5zM6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4c0-1.11.89-2 2-2m9 16v-2H6v2zm3-4v-2H6v2z"/></svg></span> <strong>参考文档</strong></p>
 <ul>
 <li><code>00_说明/个人知识库部署.md</code> - 知识库部署指南</li>
-<li><code>01_常用工具文档/ES 常用语句记录.md</code> - 文档美化示例</li>
-<li><code>02_问题处理文档/ES集群写入拒绝排查优化报告.md</code> - 报告美化示例</li>
+<li><code>02_问题处理文档/Phoenix_QueryServer_Namespace_Mapping_排查报告.md</code> - 标签化头部参考模板</li>
+<li><code>01_常用工具文档/ES 常用语句记录.md</code> - 工具手册美化示例</li>
+<li><code>02_问题处理文档/ES集群写入拒绝排查优化报告.md</code> - 故障排查报告美化示例</li>
 </ul>
 <hr />
 <h2 id="_8">八、总结<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.41 13.41 6 19l1.41-1.42L1.83 12m20.41-6.42L11.66 16.17 7.5 12l-1.43 1.41L11.66 19l12-12M18 7l-1.41-1.42-6.35 6.35 1.42 1.41z"/></svg></span> <strong>核心要点</strong></p>
 <ol>
-<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 规则文件位置：<code>D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md</code></li>
+<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 规则文件位置：<code>D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc</code></li>
 <li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 使用方式：对话引用、自定义指令、快捷指令</li>
+<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 标签化头部：文档类型 + 时间 + 维护人 + <strong>必选标签</strong>（3~6个）</li>
 <li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 美化规范：图标、提示框、可折叠内容、代码块</li>
 <li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 目录归类：根据文档类型自动归类到对应文件夹</li>
 </ol>
