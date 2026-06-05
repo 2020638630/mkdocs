@@ -852,6 +852,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        六、常见问题排查
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="六、常见问题排查">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-gitignore-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 .gitignore 忽略 site/ 目录不生效
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-mkdocs-warning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 MkDocs 构建时文档链接报 WARNING
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        七、文档更新记录
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2597,6 +2647,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        六、常见问题排查
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="六、常见问题排查">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-gitignore-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 .gitignore 忽略 site/ 目录不生效
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-mkdocs-warning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 MkDocs 构建时文档链接报 WARNING
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        七、文档更新记录
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2945,6 +3045,100 @@
 <li><strong>取消隐藏</strong>：删除或注释 <code>exclude_docs</code> 中对应的配置行即可恢复显示；</li>
 <li><strong>路径规则</strong>：路径相对于 <code>docs_dir</code> 配置的目录（默认为 <code>docs/</code>）。</li>
 </ol>
+<hr />
+<h2 id="_14"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 7h-2.81c-.45-.8-1.07-1.5-1.82-2L16 3.41 14.59 2l-2.17 2.17a6 6 0 0 0-2.83 0L7.41 2 6 3.41 7.62 5c-.75.5-1.36 1.21-1.81 2H3v2h2.09c-.06.33-.09.66-.09 1v1H3v2h2v1c0 .34.03.67.09 1H3v2h2.81A6 6 0 0 0 13 19.65V19c0-2.54 1.61-4.8 4-5.65V13h2v-2h-2v-1c0-.34-.03-.67-.09-1H19zm-6 8H9v-2h4zm0-4H9V9h4zm4.75 11.16-2.75-3L16.16 18l1.59 1.59L21.34 16l1.16 1.41z"/></svg></span> 六、常见问题排查<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<h3 id="61-gitignore-site">6.1 <code>.gitignore</code> 忽略 <code>site/</code> 目录不生效<a class="headerlink" href="#61-gitignore-site" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">问题现象</p>
+<p>已在 <code>.gitignore</code> 中添加了 <code>site/</code>，但 Git 客户端仍然显示 <code>site/</code> 目录下的文件未暂存。</p>
+</div>
+<p><strong>根本原因</strong>：<code>.gitignore</code> 只对<strong>未被跟踪的</strong>文件生效。如果 <code>site/</code> 在添加 <code>.gitignore</code> 之前已经被 <code>git add</code> 或 <code>git commit</code> 过，则忽略规则对该目录无效。</p>
+<p><strong>解决方案</strong>：先从 Git 跟踪中移除（保留本地文件），再提交：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># 从 git 跟踪中移除 site/ 目录（保留本地文件）</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>git<span class="w"> </span>rm<span class="w"> </span>-r<span class="w"> </span>--cached<span class="w"> </span>site/
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># 提交移除</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>git<span class="w"> </span>add<span class="w"> </span>.
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: 从 git 跟踪中移除 site/ 构建输出目录&quot;</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>main
+</code></pre></div>
+<p>执行后，<code>site/</code> 文件将从远程仓库中删除，同时本地文件保留，之后 <code>.gitignore</code> 规则正常生效。</p>
+<div class="admonition tip">
+<p class="admonition-title">预防建议</p>
+<p>项目初始搭建时，<strong>务必先创建 <code>.gitignore</code> 并确认包含 <code>site/</code> 规则</strong>，再执行首次 <code>git add .</code> 提交，避免后续需要手动清理。</p>
+</div>
+<hr />
+<h3 id="62-mkdocs-warning">6.2 MkDocs 构建时文档链接报 WARNING<a class="headerlink" href="#62-mkdocs-warning" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">问题现象</p>
+<p><code>mkdocs build</code> 或 <code>mkdocs gh-deploy</code> 时出现类似警告：
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>WARNING - Doc file &#39;xxx.md&#39; contains a link &#39;../path/file.md&#39;, 
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>          but the target &#39;path/file.md&#39; is not found among documentation files.
+</code></pre></div></p>
+</div>
+<p><strong>常见原因</strong>：文档中使用了相对路径链接（如 <code>../dir/file.md</code>），但路径层级计算错误。</p>
+<p><strong>排查方法</strong>：</p>
+<ol>
+<li><strong>确认链接起点的目录层级</strong>：如文件 <code>04_研发内部设计/阳煤商品治理/xxx.md</code> 深度为 2 层</li>
+<li><strong>确认目标文件的位置</strong>：如目标在 <code>03_项目技术架构文档/file.md</code>（深度 1 层）</li>
+<li><strong>计算正确的相对路径</strong>：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">起点目录</th>
+<th style="text-align: left;">目标目录</th>
+<th style="text-align: left;">正确相对路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>04_研发内部设计/阳煤商品治理/</code></td>
+<td style="text-align: left;"><code>03_项目技术架构文档/</code></td>
+<td style="text-align: left;"><code>../../03_项目技术架构文档/file.md</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>04_研发内部设计/</code></td>
+<td style="text-align: left;"><code>03_项目技术架构文档/</code></td>
+<td style="text-align: left;"><code>../03_项目技术架构文档/file.md</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>docs/</code></td>
+<td style="text-align: left;"><code>03_项目技术架构文档/</code></td>
+<td style="text-align: left;"><code>03_项目技术架构文档/file.md</code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">核心原则</p>
+<ul>
+<li>每个 <code>../</code> 向上退一层目录</li>
+<li>从起点文件所在目录开始计算，直到两个文件的公共父目录</li>
+</ul>
+</div>
+<hr />
+<h2 id="_15"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.5 8H12v5l4.28 2.54.72-1.21-3.5-2.08zM13 3a9 9 0 0 0-9 9H1l3.96 4.03L9 12H6a7 7 0 0 1 7-7 7 7 0 0 1 7 7 7 7 0 0 1-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.9 8.9 0 0 0 13 21a9 9 0 0 0 9-9 9 9 0 0 0-9-9"/></svg></span> 七、文档更新记录<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">版本</th>
+<th style="text-align: left;">日期</th>
+<th style="text-align: left;">更新内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">v1.0</td>
+<td style="text-align: left;">2026-06-05</td>
+<td style="text-align: left;">初始版本，覆盖完整部署流程</td>
+</tr>
+<tr>
+<td style="text-align: left;">v1.1</td>
+<td style="text-align: left;">2026-06-05</td>
+<td style="text-align: left;">新增第六节：<code>site/</code> 忽略失效和相对路径链接 WARNING 排查方法</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <div class="admonition tip">
 <p class="admonition-title">使用提示</p>
