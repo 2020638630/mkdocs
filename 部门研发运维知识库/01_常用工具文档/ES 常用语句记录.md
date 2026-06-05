@@ -714,7 +714,7 @@ systemctl restart elasticsearch
 
 # 示例
 curl -X GET "http://localhost:9200/_cat/indices?v" \
-  -u elastic:DVtKKsVY9cjLTg96uY2U
+  -u elastic:密码
 ```
 
 ---
