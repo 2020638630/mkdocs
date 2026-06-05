@@ -11,21 +11,25 @@
       
       
       
+        <link rel="prev" href="../k8s%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/">
+      
+      
+        <link rel="next" href="../%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/">
       
       
         
       
       
-      <link rel="icon" href="/assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>研发实施运维知识库</title>
+        <title>价格监测时效性相关问题排查思路 - 研发实施运维知识库</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -44,7 +48,7 @@
       
     
     
-    <script>__md_scope=new URL("/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -61,6 +65,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#_1" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -71,7 +80,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="研发实施运维知识库" class="md-header__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
+    <a href="../.." title="研发实施运维知识库" class="md-header__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -91,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              价格监测时效性相关问题排查思路
             
           </span>
         </div>
@@ -166,7 +175,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -187,7 +196,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/00_%E8%AF%B4%E6%98%8E/" class="md-tabs__link">
+        <a href="../../00_%E8%AF%B4%E6%98%8E/" class="md-tabs__link">
           
   
   
@@ -203,11 +212,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="/01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -227,7 +238,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+        <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/" class="md-tabs__link">
           
   
   
@@ -247,7 +258,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+        <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-tabs__link">
           
   
   
@@ -267,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/" class="md-tabs__link">
+        <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/" class="md-tabs__link">
           
   
   
@@ -287,7 +298,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-tabs__link">
+        <a href="../../05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-tabs__link">
           
   
   
@@ -307,7 +318,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-tabs__link">
+        <a href="../../99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-tabs__link">
           
   
   
@@ -341,7 +352,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="研发实施运维知识库" class="md-nav__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
+    <a href="../.." title="研发实施运维知识库" class="md-nav__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -359,7 +370,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -440,7 +451,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/00_%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+      <a href="../../00_%E8%AF%B4%E6%98%8E/" class="md-nav__link">
         
   
   
@@ -468,7 +479,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/00_%E8%AF%B4%E6%98%8E/AI%E6%96%87%E6%A1%A3%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+      <a href="../../00_%E8%AF%B4%E6%98%8E/AI%E6%96%87%E6%A1%A3%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" class="md-nav__link">
         
   
   
@@ -496,7 +507,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/00_%E8%AF%B4%E6%98%8E/%E4%B8%AA%E4%BA%BA%E7%9F%A5%E8%AF%86%E5%BA%93%E9%83%A8%E7%BD%B2/" class="md-nav__link">
+      <a href="../../00_%E8%AF%B4%E6%98%8E/%E4%B8%AA%E4%BA%BA%E7%9F%A5%E8%AF%86%E5%BA%93%E9%83%A8%E7%BD%B2/" class="md-nav__link">
         
   
   
@@ -528,28 +539,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -567,7 +581,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -585,7 +599,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -613,7 +627,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/ES%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E5%8F%A5%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+      <a href="../ES%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E5%8F%A5%E8%AE%B0%E5%BD%95/" class="md-nav__link">
         
   
   
@@ -641,7 +655,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/HBase_Spark%E9%9B%86%E7%BE%A4%E6%8E%92%E6%9F%A5%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+      <a href="../HBase_Spark%E9%9B%86%E7%BE%A4%E6%8E%92%E6%9F%A5%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
         
   
   
@@ -669,7 +683,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/Spark%E4%BB%BB%E5%8A%A1Jar%E5%8C%85%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+      <a href="../Spark%E4%BB%BB%E5%8A%A1Jar%E5%8C%85%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E/" class="md-nav__link">
         
   
   
@@ -697,7 +711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/k8s%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+      <a href="../k8s%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
         
   
   
@@ -722,10 +736,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E6%97%B6%E6%95%88%E6%80%A7%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5%E6%80%9D%E8%B7%AF/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测时效性相关问题排查思路
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -741,6 +782,98 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        排查流程
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="排查流程">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一步：明确排查范围
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二步：获取批次 ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#id_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三步：根据批次 ID 排查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第四步：排查基于时间范围打码的商品数据
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第五步：排查租户批次商品的监测结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -753,7 +886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+      <a href="../%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
         
   
   
@@ -842,7 +975,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -870,7 +1003,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/ES%E9%9B%86%E7%BE%A4%E5%86%99%E5%85%A5%E6%8B%92%E7%BB%9D%E6%8E%92%E6%9F%A5%E4%BC%98%E5%8C%96%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+      <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/ES%E9%9B%86%E7%BE%A4%E5%86%99%E5%85%A5%E6%8B%92%E7%BB%9D%E6%8E%92%E6%9F%A5%E4%BC%98%E5%8C%96%E6%8A%A5%E5%91%8A/" class="md-nav__link">
         
   
   
@@ -898,7 +1031,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/HBase%E9%9B%86%E7%BE%A4%E7%A3%81%E7%9B%98%E6%BB%A1%E5%AF%BC%E8%87%B4%E6%9C%8D%E5%8A%A1%E4%B8%AD%E6%96%AD%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+      <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/HBase%E9%9B%86%E7%BE%A4%E7%A3%81%E7%9B%98%E6%BB%A1%E5%AF%BC%E8%87%B4%E6%9C%8D%E5%8A%A1%E4%B8%AD%E6%96%AD%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
         
   
   
@@ -926,7 +1059,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/Phoenix_QueryServer_%E5%AE%95%E6%9C%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+      <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/Phoenix_QueryServer_%E5%AE%95%E6%9C%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
         
   
   
@@ -954,7 +1087,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/RabbitMQ%E5%AE%95%E6%9C%BA%E4%B8%8ERedis%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+      <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/RabbitMQ%E5%AE%95%E6%9C%BA%E4%B8%8ERedis%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
         
   
   
@@ -982,7 +1115,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/%E7%A7%9F%E6%88%B7%E5%85%A8%E9%87%8F%E4%BB%BB%E5%8A%A1%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+      <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/%E7%A7%9F%E6%88%B7%E5%85%A8%E9%87%8F%E4%BB%BB%E5%8A%A1%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
         
   
   
@@ -1010,7 +1143,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/%E9%98%B3%E7%85%A4HBase%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+      <a href="../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/%E9%98%B3%E7%85%A4HBase%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E8%AE%B0%E5%BD%95/" class="md-nav__link">
         
   
   
@@ -1099,7 +1232,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1127,7 +1260,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E5%B9%B3%E5%8F%B0%20-%20%E9%A1%B9%E7%9B%AE%E6%B5%81%E7%A8%8B%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E5%B9%B3%E5%8F%B0%20-%20%E9%A1%B9%E7%9B%AE%E6%B5%81%E7%A8%8B%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1155,7 +1288,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E6%B6%88%E6%81%AF%E7%94%9F%E6%88%90%E9%93%BE%E8%B7%AF%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E6%B6%88%E6%81%AF%E7%94%9F%E6%88%90%E9%93%BE%E8%B7%AF%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1244,7 +1377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/" class="md-nav__link">
         
   
   
@@ -1326,7 +1459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E6%8A%A5%E8%A1%A8%E5%8F%8A%E5%BC%82%E5%B8%B8%E5%95%86%E5%93%81%E7%9B%91%E6%B5%8B%E8%AE%B0%E5%BD%95/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E5%81%8F%E5%B7%AE%E7%8E%87%E9%A2%84%E8%AD%A6%E9%9C%80%E6%B1%82%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E6%8A%A5%E8%A1%A8%E5%8F%8A%E5%BC%82%E5%B8%B8%E5%95%86%E5%93%81%E7%9B%91%E6%B5%8B%E8%AE%B0%E5%BD%95/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E5%81%8F%E5%B7%AE%E7%8E%87%E9%A2%84%E8%AD%A6%E9%9C%80%E6%B1%82%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1416,7 +1549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E7%8B%AC%E7%AB%8B%E7%A7%9F%E6%88%B7%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E7%8B%AC%E7%AB%8B%E7%A7%9F%E6%88%B7%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9%E8%AF%B4%E6%98%8E/" class="md-nav__link">
         
   
   
@@ -1444,7 +1577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E9%9C%80%E6%B1%82%E8%BF%BD%E8%B8%AA%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E9%9C%80%E6%B1%82%E8%BF%BD%E8%B8%AA%E8%AE%B0%E5%BD%95/" class="md-nav__link">
         
   
   
@@ -1534,7 +1667,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E4%BA%BA%E5%B7%A5%E5%B9%B2%E9%A2%84%E7%89%B9%E6%AE%8A%E5%A4%84%E7%90%86-%E5%89%8D%E7%AB%AF%E5%AF%B9%E6%8E%A5%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E4%BA%BA%E5%B7%A5%E5%B9%B2%E9%A2%84%E7%89%B9%E6%AE%8A%E5%A4%84%E7%90%86-%E5%89%8D%E7%AB%AF%E5%AF%B9%E6%8E%A5%E8%AF%B4%E6%98%8E/" class="md-nav__link">
         
   
   
@@ -1562,7 +1695,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%AE%A1%E6%A0%B8%E8%A7%84%E5%88%99SAAS%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%AE%A1%E6%A0%B8%E8%A7%84%E5%88%99SAAS%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1590,7 +1723,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%BC%82%E5%B8%B8%E4%B8%8A%E6%8A%A5%E6%95%B0%E6%8D%AE%E5%90%91SAAS%E4%BC%A0%E8%BE%93%E9%80%BB%E8%BE%91%E8%B0%83%E6%95%B4-%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E6%96%BD%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%BC%82%E5%B8%B8%E4%B8%8A%E6%8A%A5%E6%95%B0%E6%8D%AE%E5%90%91SAAS%E4%BC%A0%E8%BE%93%E9%80%BB%E8%BE%91%E8%B0%83%E6%95%B4-%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E6%96%BD%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1618,7 +1751,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E5%8C%B9%E9%85%8D%E6%9C%8D%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E5%8C%B9%E9%85%8D%E6%9C%8D%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1646,7 +1779,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%A0%B8%E9%AA%8C%E5%A4%B1%E8%B4%A5%E7%B1%BB%E5%9E%8B%E5%88%86%E7%B1%BB%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%A0%B8%E9%AA%8C%E5%A4%B1%E8%B4%A5%E7%B1%BB%E5%9E%8B%E5%88%86%E7%B1%BB%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1674,7 +1807,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E5%8F%8C%E7%A7%9F%E6%88%B7ID%E6%94%AF%E6%8C%81%E6%94%B9%E9%80%A0%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E5%8F%8C%E7%A7%9F%E6%88%B7ID%E6%94%AF%E6%8C%81%E6%94%B9%E9%80%A0%E8%AF%B4%E6%98%8E/" class="md-nav__link">
         
   
   
@@ -1702,7 +1835,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E7%A7%9F%E6%88%B7%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E7%A7%9F%E6%88%B7%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1730,7 +1863,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%A6%96%E9%A1%B5%E7%BB%9F%E8%AE%A1%E6%8E%A5%E5%8F%A3%E6%96%B0%E5%A2%9E%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%A6%96%E9%A1%B5%E7%BB%9F%E8%AE%A1%E6%8E%A5%E5%8F%A3%E6%96%B0%E5%A2%9E%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
         
   
   
@@ -1827,7 +1960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-nav__link">
+      <a href="../../05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-nav__link">
         
   
   
@@ -1916,7 +2049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-nav__link">
+      <a href="../../99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-nav__link">
         
   
   
@@ -1961,6 +2094,88 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        排查流程
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="排查流程">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一步：明确排查范围
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二步：获取批次 ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#id_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三步：根据批次 ID 排查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第四步：排查基于时间范围打码的商品数据
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第五步：排查租户批次商品的监测结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1973,8 +2188,120 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+
+<h1 id="_1"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 12h2v6h-2zm0 8h2v2h-2zM12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c2.3 0 4.3-.8 6-2V10h3.8c-.9-4.6-5-8-9.8-8m4.2 14.2L11 13V7h1.5v5.2l4.5 2.7z"/></svg></span> 价格监测时效性相关问题排查思路<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<hr />
+<h2 id="_2"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg></span> 排查流程<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">第一步：明确排查范围<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<div class="admonition info">
+<p class="admonition-title">前提条件</p>
+<p>首先需明确<strong>哪个租户的什么时间段的商品</strong>需要排查</p>
+</div>
+<hr />
+<h3 id="id">第二步：获取批次 ID<a class="headerlink" href="#id" title="Permanent link">&para;</a></h3>
+<p>根据租户 ID 和时间范围，获取推送的租户商品批次 ID：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">-- 获取一定时间范围内推送的租户商品批次id</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="k">distinct</span><span class="w"> </span><span class="n">batch_id</span><span class="w"> </span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">FROM</span><span class="w"> </span><span class="n">t_developer_goods</span><span class="w"> </span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">developer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;租户id&#39;</span><span class="w"> </span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="k">operation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="n">modify_time</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="s1">&#39;startTime&#39;</span><span class="w"> </span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="k">and</span><span class="w"> </span><span class="n">modify_time</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="s1">&#39;endTime&#39;</span><span class="p">;</span>
+</code></pre></div>
+<hr />
+<h3 id="id_1">第三步：根据批次 ID 排查<a class="headerlink" href="#id_1" title="Permanent link">&para;</a></h3>
+<p>根据批次 ID 可以获取到 <code>t_tenant_task_conf</code>（租户任务配置表）数据，这里有两种情况：</p>
+<p>===</p>
+<div class="highlight"><pre><span></span><code>#### 情况 1：未查询到 `t_tenant_task_conf` 数据
+
+根据下述 SQL 排查批次是否闭合：
+
+```sql
+-- 查询未结束传输的批次
+SELECT * 
+FROM t_developer_goods_batch 
+WHERE (batch_status is null or batch_status = &#39;&#39; or batch_status != &#39;1&#39;) 
+  and batch_id in (&#39;批次id&#39;)
+```
+
+??? tip &quot;处理方式&quot;
+    如果批次状态正常，则需要手动重新操作一次 `/syncFinish`, 可使用 `InternalManageController` 中提供的 main 方法批量操作。
+</code></pre></div>
+<p>===</p>
+<div class="highlight"><pre><span></span><code>#### 情况 2：`t_tenant_task_conf` 数据存在
+
+查看 `state` 字段：
+
+=== &quot;state = 0（任务已触发）&quot;
+    ```sql
+    -- 根据 sql 查询是否存在任务表 t_developer_task 数据
+    SELECT * 
+    FROM t_developer_task 
+    WHERE source_id = &#39;租户源id&#39; 
+      and batch_id in (&#39;批次id&#39;)
+    ```
+
+    ??? info &quot;排查说明&quot;
+        任务肯定是存在的，主要看 `t_developer_task` 的 `state` 是不是 **1000**（执行成功）。
+
+    ??? bug &quot;如果不是 1000&quot;
+        需要立即执行完监测任务的话，可根据 `PriceStartMain` 提供的 main 方法里面的 **直接触发合理价计算** 进行处理，或者通过运营端的监测任务列表页面进行手动操作。
+
+=== &quot;state = 1（任务未触发）&quot;
+    ??? bug &quot;可能原因&quot;
+        可能堵在打码任务，可以在服务器内根据任务 ID（`tenant_task_id`）搜索日志信息
+
+    ```bash
+    # 示例
+    grep &quot;2032383091493126145&quot; /boss/softlog/pricemonitor/bssc-biz-operate/maintoperate/info.2026-03-30.0.log
+    ```
+
+    ??? example &quot;日志示例（未触发原因：有未核验数据，证明批次内存在未打码商品）&quot;
+        ```
+        2026-03-30 04:19:37.680  INFO [--] 7 --- [XNIO-1 task-5] .m.o.s.i.PriceMonitorTaskConfServiceImpl : 开始校验任务是否需执行 sourceId=hnzhgyl, tenantTaskId=2032383091493126145
+        2026-03-30 04:19:37.680  INFO [--] 7 --- [XNIO-1 task-5] .m.o.s.i.PriceMonitorTaskConfServiceImpl : 开始校验任务是否可以构建监测任务，租户任务ID: 2032383091493126145, 数据源ID: hnzhgyl
+        2026-03-30 04:19:38.939  INFO [--] 7 --- [XNIO-1 task-5] .m.o.s.i.PriceMonitorTaskConfServiceImpl : 监测任务商品数量统计。租户任务ID: 2032383091493126145, 商品数量: 1, 有数据: true
+        2026-03-30 04:19:38.941  INFO [--] 7 --- [XNIO-1 task-5] .m.o.s.i.PriceMonitorTaskConfServiceImpl : 批次任务未核验商品数量统计。租户任务ID: 2032383091493126145, 未核验商品数量: 1, 存在未核验数据: true
+        2026-03-30 04:19:38.941  INFO [--] 7 --- [XNIO-1 task-5] .m.o.s.i.PriceMonitorTaskConfServiceImpl : 监测任务构建校验结果。租户任务ID: 2032383091493126145, 可以构建: false, 有数据: true, 有未核验数据: true
+        ```
+</code></pre></div>
+<p>===</p>
+<hr />
+<h3 id="_4">第四步：排查基于时间范围打码的商品数据<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>可使用下述 SQL 根据时间分组获得大致打码任务触发时间点（时间范围的打码任务 华能是 4 分钟一次，其余是一小时一次）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">-- `t_tenant_task_conf` 未触发的批次</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">SELECT</span><span class="w"> </span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="k">count</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">`</span><span class="err">数量</span><span class="o">`</span><span class="p">,</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">DATE_FORMAT</span><span class="p">(</span><span class="n">modify_time</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;%Y-%m-%d %H%i&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="o">`</span><span class="err">时间分组</span><span class="o">`</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">FROM</span><span class="w"> </span><span class="n">t_developer_goods</span><span class="w"> </span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">developer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;租户id&#39;</span><span class="w"> </span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="k">AND</span><span class="w"> </span><span class="n">batch_id</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;批次id&#39;</span><span class="p">)</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">DATE_FORMAT</span><span class="p">(</span><span class="n">modify_time</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;%Y-%m-%d %H%i&#39;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="_5">第五步：排查租户批次商品的监测结果<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>是否传输完毕，可使用 <code>GoodsWithoutHisData</code> 代码进行查询（需要指定租户 <code>source_id</code> 和商品 id）</p>
+<div class="admonition info">
+<p class="admonition-title">项目地址</p>
+<p><code>http://192.168.8.48/pricemonitor/pricemonitor-tool.git</code></p>
+<p>（内含项目商品导出方法 <code>GoodsAll</code> 和海油批量删除数据库及 ES 商品方法 <code>src\main\java\com\boss\dptech\tool\pricemonitor\haiyou</code>）</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -2011,10 +2338,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "/", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "search.highlight"], "search": "/assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

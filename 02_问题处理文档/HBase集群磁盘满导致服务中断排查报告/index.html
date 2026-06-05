@@ -1,0 +1,3912 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="部署文档、故障排查、版本升级查阅站点">
+      
+      
+      
+      
+        <link rel="prev" href="../ES%E9%9B%86%E7%BE%A4%E5%86%99%E5%85%A5%E6%8B%92%E7%BB%9D%E6%8E%92%E6%9F%A5%E4%BC%98%E5%8C%96%E6%8A%A5%E5%91%8A/">
+      
+      
+        <link rel="next" href="../Phoenix_QueryServer_%E5%AE%95%E6%9C%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>HBase 集群磁盘满导致服务中断排查报告 - 研发实施运维知识库</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hbase" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="研发实施运维知识库" class="md-header__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            研发实施运维知识库
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              HBase 集群磁盘满导致服务中断排查报告
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00_%E8%AF%B4%E6%98%8E/" class="md-tabs__link">
+          
+  
+  
+  00 说明
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+          
+  
+  
+  01 常用工具文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  02 问题处理文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+          
+  
+  
+  03 项目技术架构文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/" class="md-tabs__link">
+          
+  
+  
+  04 研发内部设计
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-tabs__link">
+          
+  
+  
+  05 附件资源
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-tabs__link">
+          
+  
+  
+  99 文档模板
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="研发实施运维知识库" class="md-nav__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    研发实施运维知识库
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00 说明
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    00 说明
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_%E8%AF%B4%E6%98%8E/AI%E6%96%87%E6%A1%A3%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI 文档生成规则使用说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_%E8%AF%B4%E6%98%8E/%E4%B8%AA%E4%BA%BA%E7%9F%A5%E8%AF%86%E5%BA%93%E9%83%A8%E7%BD%B2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MkDocs + GitHub Pages 知识库部署使用手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 常用工具文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 常用工具文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常用工具文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/ES%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E5%8F%A5%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elasticsearch 常用语句记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/HBase_Spark%E9%9B%86%E7%BE%A4%E6%8E%92%E6%9F%A5%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase / Spark 集群排查与运维命令手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/Spark%E4%BB%BB%E5%8A%A1Jar%E5%8C%85%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spark 任务 Jar 包管理机制说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/k8s%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes 运维常用命令手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E6%97%B6%E6%95%88%E6%80%A7%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5%E6%80%9D%E8%B7%AF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测时效性相关问题排查思路
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    传统服务器运维常用命令手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 问题处理文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 问题处理文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    问题处理文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ES%E9%9B%86%E7%BE%A4%E5%86%99%E5%85%A5%E6%8B%92%E7%BB%9D%E6%8E%92%E6%9F%A5%E4%BC%98%E5%8C%96%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elasticsearch 集群写入拒绝排查与优化报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase 集群磁盘满导致服务中断排查报告
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase 集群磁盘满导致服务中断排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、问题现象
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、问题现象">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        初始发现
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        磁盘初始状态
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、故障链路
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="二、故障链路">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        报错确认
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三、处理过程
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、处理过程">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一步：排查磁盘占用（各节点）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第一步：排查磁盘占用（各节点）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        排查结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0001-pricemonitor-107g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二步：清理 hbase-0001 pricemonitor 日志（释放 ~107G）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第二步：清理 hbase-0001 pricemonitor 日志（释放 ~107G）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        定位大文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理命令
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0003-onlyoffice-docker-64g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三步：清理 hbase-0003 旧 onlyoffice + Docker（释放 ~64G）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第三步：清理 hbase-0003 旧 onlyoffice + Docker（释放 ~64G）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onlyoffice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        确认运行中的 onlyoffice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理旧版本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理 Docker 无用资源
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0004-nginx-10g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第四步：清理 hbase-0004 Nginx 日志（释放 ~10G）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第五步：清理后磁盘状态
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第六步：恢复 HBase 集群
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第六步：恢复 HBase 集群">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hmaster-regionserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        确认 HMaster + RegionServer 状态
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        启动 HBase 集群
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0001-regionserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        补充启动 hbase-0001 的 RegionServer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        恢复结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phoenix-query-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第七步：恢复 Phoenix Query Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hdfsdatanode-safemode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第八步：修复 HDFS（DataNode + SafeMode）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hdfs-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第九步：HDFS 数据再均衡（Balancer）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第九步：HDFS 数据再均衡（Balancer）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么需要 Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#balancer_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Balancer 运行进度
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#material-chart-success" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :material-chart-success: 四、最终成果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=":material-chart-success: 四、最终成果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理前后磁盘对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        各组件恢复状态
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0001" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hbase-0001 目录清理前后对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0003" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hbase-0003 目录清理前后对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        五、关键注意事项
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="五、关键注意事项">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        可以清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        绝对不能清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理文件正确姿势
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#balancer_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        六、Balancer 完成 — 后置核查
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="六、Balancer 完成 — 后置核查">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hdfs-2218" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        最终 HDFS 数据分布（22:18）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2218" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        最终磁盘空间核查（22:18）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        七、预防措施
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="七、预防措施">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-pricemonitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 配置 pricemonitor 日志轮转
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 配置 Nginx 日志轮转
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-spark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 配置 Spark 自动清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 建议添加磁盘监控脚本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-hdfs-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 定期执行 HDFS Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        八、故障处理检查清单
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        九、经验总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Phoenix_QueryServer_%E5%AE%95%E6%9C%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phoenix QueryServer 频繁宕机排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RabbitMQ%E5%AE%95%E6%9C%BA%E4%B8%8ERedis%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RabbitMQ 宕机与 Redis 内存溢出排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%A7%9F%E6%88%B7%E5%85%A8%E9%87%8F%E4%BB%BB%E5%8A%A1%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    租户全量任务卡死问题排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E9%98%B3%E7%85%A4HBase%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase/Phoenix + Kafka 禁用改造 - 问题处理记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 项目技术架构文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03 项目技术架构文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    项目技术架构文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E5%B9%B3%E5%8F%B0%20-%20%E9%A1%B9%E7%9B%AE%E6%B5%81%E7%A8%8B%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测平台 - 项目流程文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E6%B6%88%E6%81%AF%E7%94%9F%E6%88%90%E9%93%BE%E8%B7%AF%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测平台 - 消息生成链路说明文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 研发内部设计
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    04 研发内部设计
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    研发内部设计
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中海油报表及异常商品监测记录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    中海油报表及异常商品监测记录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E6%8A%A5%E8%A1%A8%E5%8F%8A%E5%BC%82%E5%B8%B8%E5%95%86%E5%93%81%E7%9B%91%E6%B5%8B%E8%AE%B0%E5%BD%95/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E5%81%8F%E5%B7%AE%E7%8E%87%E9%A2%84%E8%AD%A6%E9%9C%80%E6%B1%82%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中海油偏差率预警需求设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    华能消费帮扶
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    华能消费帮扶
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E7%8B%AC%E7%AB%8B%E7%A7%9F%E6%88%B7%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    华能消费帮扶独立租户代码修改说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E9%9C%80%E6%B1%82%E8%BF%BD%E8%B8%AA%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    华能消费帮扶独立租户需求追踪记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阳煤商品治理
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    阳煤商品治理
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E4%BA%BA%E5%B7%A5%E5%B9%B2%E9%A2%84%E7%89%B9%E6%AE%8A%E5%A4%84%E7%90%86-%E5%89%8D%E7%AB%AF%E5%AF%B9%E6%8E%A5%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    人工干预特殊处理 - 前端对接说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%AE%A1%E6%A0%B8%E8%A7%84%E5%88%99SAAS%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    审核规则 SAAS 数据同步功能设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%BC%82%E5%B8%B8%E4%B8%8A%E6%8A%A5%E6%95%B0%E6%8D%AE%E5%90%91SAAS%E4%BC%A0%E8%BE%93%E9%80%BB%E8%BE%91%E8%B0%83%E6%95%B4-%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E6%96%BD%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    异常上报数据向SAAS传输逻辑调整 - 设计与实施文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E5%8C%B9%E9%85%8D%E6%9C%8D%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    研发简要设计卡片 - 标准商品治理匹配服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%A0%B8%E9%AA%8C%E5%A4%B1%E8%B4%A5%E7%B1%BB%E5%9E%8B%E5%88%86%E7%B1%BB%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    标准商品治理核验失败类型分类方案设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E5%8F%8C%E7%A7%9F%E6%88%B7ID%E6%94%AF%E6%8C%81%E6%94%B9%E9%80%A0%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阳煤双租户ID支持改造说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E7%A7%9F%E6%88%B7%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阳煤租户标准商品治理数据同步功能设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%A6%96%E9%A1%B5%E7%BB%9F%E8%AE%A1%E6%8E%A5%E5%8F%A3%E6%96%B0%E5%A2%9E%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页统计接口新增功能设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 附件资源
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    05 附件资源
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附件资源
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    99 文档模板
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    99 文档模板
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    文档模板
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、问题现象
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、问题现象">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        初始发现
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        磁盘初始状态
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、故障链路
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="二、故障链路">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        报错确认
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三、处理过程
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、处理过程">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一步：排查磁盘占用（各节点）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第一步：排查磁盘占用（各节点）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        排查结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0001-pricemonitor-107g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二步：清理 hbase-0001 pricemonitor 日志（释放 ~107G）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第二步：清理 hbase-0001 pricemonitor 日志（释放 ~107G）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        定位大文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理命令
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0003-onlyoffice-docker-64g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三步：清理 hbase-0003 旧 onlyoffice + Docker（释放 ~64G）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第三步：清理 hbase-0003 旧 onlyoffice + Docker（释放 ~64G）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#onlyoffice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        确认运行中的 onlyoffice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理旧版本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理 Docker 无用资源
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0004-nginx-10g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第四步：清理 hbase-0004 Nginx 日志（释放 ~10G）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第五步：清理后磁盘状态
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第六步：恢复 HBase 集群
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第六步：恢复 HBase 集群">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hmaster-regionserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        确认 HMaster + RegionServer 状态
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        启动 HBase 集群
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0001-regionserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        补充启动 hbase-0001 的 RegionServer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        恢复结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phoenix-query-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第七步：恢复 Phoenix Query Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hdfsdatanode-safemode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第八步：修复 HDFS（DataNode + SafeMode）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hdfs-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第九步：HDFS 数据再均衡（Balancer）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第九步：HDFS 数据再均衡（Balancer）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么需要 Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#balancer_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Balancer 运行进度
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#material-chart-success" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :material-chart-success: 四、最终成果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=":material-chart-success: 四、最终成果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理前后磁盘对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        各组件恢复状态
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0001" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hbase-0001 目录清理前后对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hbase-0003" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hbase-0003 目录清理前后对比
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        五、关键注意事项
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="五、关键注意事项">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        可以清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        绝对不能清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        清理文件正确姿势
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#balancer_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        六、Balancer 完成 — 后置核查
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="六、Balancer 完成 — 后置核查">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hdfs-2218" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        最终 HDFS 数据分布（22:18）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2218" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        最终磁盘空间核查（22:18）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        七、预防措施
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="七、预防措施">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-pricemonitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 配置 pricemonitor 日志轮转
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 配置 Nginx 日志轮转
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-spark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 配置 Spark 自动清理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 建议添加磁盘监控脚本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-hdfs-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 定期执行 HDFS Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        八、故障处理检查清单
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        九、经验总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="hbase"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a1 1 0 1 0 1 1 1 1 0 0 0-1-1m0 0a1 1 0 1 0 1 1 1 1 0 0 0-1-1m6-7H6a2 2 0 0 0-2 2v9.09A5.5 5.5 0 0 1 5 13a5.7 5.7 0 0 1 2 .36 6 6 0 1 1 8.71 1.33l-1.92-2.42a1 1 0 0 0-1.37-.37l-.86.5a1 1 0 0 0-.37 1.37L12.1 16a6.1 6.1 0 0 1-2.1-.38 6 6 0 0 1 .19 6.38H18a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2m-3.42 17.58-2.49-6.31.86-.5 4.22 5.31M12 11a1 1 0 1 0-1-1 1 1 0 0 0 1 1M7.12 22.54 5 20.41l-2.12 2.13-1.42-1.42L3.59 19l-2.13-2.12 1.42-1.42L5 17.59l2.12-2.13 1.42 1.42L6.41 19l2.13 2.12Z"/></svg></span> HBase 集群磁盘满导致服务中断排查报告<a class="headerlink" href="#hbase" title="Permanent link">&para;</a></h1>
+<p><img alt="📆" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c6.svg" title=":calendar:" /> <strong>记录时间</strong>：2026-06-04</p>
+<hr />
+<h2 id="_1"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 13h-2V7h2m-2 8h2v2h-2m4.73-14H8.27L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27z"/></svg></span> 一、问题现象<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="_2">初始发现<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>集群磁盘使用率普遍超过 85% 阈值，其中 <strong>hbase-0001 和 hbase-0003 已到 100%</strong>，导致：</p>
+<ul>
+<li>HBase RegionServer 全部下线（5 节点无一存活）</li>
+<li>HMaster 亦已停止</li>
+<li>Phoenix Query Server 返回 HTTP 502</li>
+<li>pricemonitor-bigdata 服务的 <code>error.log</code> 和 <code>apiError.log</code> 各涨到 <strong>15G</strong>，疯狂输出错误日志</li>
+</ul>
+<h3 id="_3">磁盘初始状态<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>hbase-0001: 1008G / 988G  = 100% :red_circle:
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>hbase-0002: 1008G / 877G  =  92% :orange_circle:
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>hbase-0003: 1008G / 957G  = 100% :red_circle:
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>hbase-0004: 1008G / 879G  =  92% :orange_circle:
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>hbase-0005: 1008G / 720G  =  76% :green_circle:
+</code></pre></div>
+<hr />
+<h2 id="_4"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.4 7.5c.8.8.8 2.1 0 2.8l-2.8 2.8-7.8-7.8 2.8-2.8c.8-.8 2.1-.8 2.8 0l1.8 1.8 3-3 1.4 1.4-3 3zm-5.8 5.8-1.4-1.4-2.8 2.8-2.1-2.1 2.8-2.8-1.4-1.4-2.8 2.8-1.5-1.4-2.8 2.8c-.8.8-.8 2.1 0 2.8l1.8 1.8-4 4 1.4 1.4 4-4 1.8 1.8c.8.8 2.1.8 2.8 0l2.8-2.8-1.4-1.4z"/></svg></span> 二、故障链路<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>磁盘 100% 满
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  → HBase RegionServer 无法写入 → 进入只读/异常状态 → 进程死亡
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    → HMaster 也随后停止
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>      → Phoenix Query Server (PQS) 连不上 HBase → 返回 HTTP 502
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        → pricemonitor-bigdata 每次 Phoenix 写入都报 502
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>          → error.log / apiError.log 被疯狂刷到 15G
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>            → 日志又进一步占满磁盘 → 恶性循环
+</code></pre></div>
+<h3 id="_5">报错确认<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Caused by: java.lang.RuntimeException: Failed to execute HTTP Request, got HTTP/502
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  at org.apache.calcite.avatica.remote.AvaticaCommonsHttpClientImpl.send(...)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  at org.apache.calcite.avatica.remote.Driver.connect(Driver.java:176)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  ...
+</code></pre></div>
+<hr />
+<h2 id="_6"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m21.71 20.29-1.42 1.42a1 1 0 0 1-1.41 0L7 9.85A3.8 3.8 0 0 1 6 10a4 4 0 0 1-3.78-5.3l2.54 2.54.53-.53 1.42-1.42.53-.53L4.7 2.22A4 4 0 0 1 10 6a3.8 3.8 0 0 1-.15 1l11.86 11.88a1 1 0 0 1 0 1.41M2.29 18.88a1 1 0 0 0 0 1.41l1.42 1.42a1 1 0 0 0 1.41 0l5.47-5.46-2.83-2.83M20 2l-4 2v2l-2.17 2.17 2 2L18 8h2l2-4Z"/></svg></span> 三、处理过程<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h3 id="_7">第一步：排查磁盘占用（各节点）<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">for</span><span class="w"> </span>host<span class="w"> </span><span class="k">in</span><span class="w"> </span>hbase-0001<span class="w"> </span>hbase-0002<span class="w"> </span>hbase-0003<span class="w"> </span>hbase-0004<span class="w"> </span>hbase-0005<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== </span><span class="nv">$host</span><span class="s2"> ===&quot;</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>ssh<span class="w"> </span><span class="nv">$host</span><span class="w"> </span><span class="s2">&quot;du -sh /data/* 2&gt;/dev/null | sort -rh | head -10&quot;</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">done</span>
+</code></pre></div>
+<h4 id="_8">排查结果<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>第 1 大户</th>
+<th>第 2 大户</th>
+<th>异常项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hbase-0001</td>
+<td>hadoop 846G</td>
+<td><strong>pricemonitor 125G</strong> <img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/26a0.svg" title=":warning:" /></td>
+<td>pricemonitor 远超其他节点（正常仅 206M）</td>
+</tr>
+<tr>
+<td>hbase-0002</td>
+<td>hadoop 862G</td>
+<td>spark 12G</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>hbase-0003</td>
+<td>hadoop 867G</td>
+<td><strong>docker 65G + onlyoffice ~20G</strong> <img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/26a0.svg" title=":warning:" /></td>
+<td>多版本 onlyoffice 旧部署包堆积</td>
+</tr>
+<tr>
+<td>hbase-0004</td>
+<td>hadoop 836G</td>
+<td><strong>nginx 12G</strong> <img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/26a0.svg" title=":warning:" /></td>
+<td>nginx 日志堆积</td>
+</tr>
+<tr>
+<td>hbase-0005</td>
+<td>hadoop 704G</td>
+<td>spark 11G</td>
+<td>正常，236G 空闲</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="hbase-0001-pricemonitor-107g">第二步：清理 hbase-0001 pricemonitor 日志（释放 ~107G）<a class="headerlink" href="#hbase-0001-pricemonitor-107g" title="Permanent link">&para;</a></h3>
+<h4 id="_9">定位大文件<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ssh<span class="w"> </span>hbase-0001<span class="w"> </span><span class="s2">&quot;ls -lhS /data/pricemonitor/logs/&quot;</span>
+</code></pre></div>
+<p>发现：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>大小</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>error.log</code></td>
+<td>15G</td>
+<td>502 连接错误，清空</td>
+</tr>
+<tr>
+<td><code>apiError.log</code></td>
+<td>15G</td>
+<td>502 连接错误，清空</td>
+</tr>
+<tr>
+<td><code>info.log</code> + 历史归档</td>
+<td>~7G</td>
+<td>删除历史归档</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_10">清理命令<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># 删除所有历史归档日志文件</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>ssh<span class="w"> </span>hbase-0001<span class="w"> </span><span class="s2">&quot;find /data/pricemonitor/logs -name &#39;*.log.*&#39; -delete&quot;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># 清空当前正在写的错误日志（避免删除导致文件句柄丢失）</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>ssh<span class="w"> </span>hbase-0001<span class="w"> </span><span class="s2">&quot;: &gt; /data/pricemonitor/logs/error.log&quot;</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>ssh<span class="w"> </span>hbase-0001<span class="w"> </span><span class="s2">&quot;: &gt; /data/pricemonitor/logs/apiError.log&quot;</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>ssh<span class="w"> </span>hbase-0001<span class="w"> </span><span class="s2">&quot;: &gt; /data/pricemonitor/logs/info.log&quot;</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>ssh<span class="w"> </span>hbase-0001<span class="w"> </span><span class="s2">&quot;: &gt; /data/pricemonitor/logs/warn.log&quot;</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">关键技术点</p>
+<p>用 <code>: &gt; file</code> 而非 <code>rm</code>，因为文件正在被程序写入，<code>rm</code> 会导致程序仍向已删除文件写数据，磁盘空间不会释放。</p>
+</div>
+<p><strong>效果：</strong> 125G → 18G，释放约 107G</p>
+<hr />
+<h3 id="hbase-0003-onlyoffice-docker-64g">第三步：清理 hbase-0003 旧 onlyoffice + Docker（释放 ~64G）<a class="headerlink" href="#hbase-0003-onlyoffice-docker-64g" title="Permanent link">&para;</a></h3>
+<h4 id="onlyoffice">确认运行中的 onlyoffice<a class="headerlink" href="#onlyoffice" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ssh<span class="w"> </span>hbase-0003<span class="w"> </span><span class="s2">&quot;ps aux | grep onlyoffice | grep -v grep&quot;</span>
+</code></pre></div>
+<p>输出表明实际运行的 onlyoffice 在 <strong><code>/var/www/onlyoffice/</code></strong>（标准 Linux 安装路径），<code>/data/</code> 下的都是旧部署包备份。</p>
+<h4 id="_11">清理旧版本<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ssh<span class="w"> </span>hbase-0003<span class="w"> </span><span class="s2">&quot;rm -rf /data/onlyoffice82 /data/onlyoffice92_1 /data/onlyoffice-de /data/onlyoffice92&quot;</span>
+</code></pre></div>
+<h4 id="docker">清理 Docker 无用资源<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>ssh<span class="w"> </span>hbase-0003<span class="w"> </span><span class="s2">&quot;docker system prune -a -f --volumes&quot;</span>
+</code></pre></div>
+<p><strong>效果：</strong> Docker 65G → 20G，累计释放约 64G。Docker 3 个运行容器正常，无数据丢失。</p>
+<hr />
+<h3 id="hbase-0004-nginx-10g">第四步：清理 hbase-0004 Nginx 日志（释放 ~10G）<a class="headerlink" href="#hbase-0004-nginx-10g" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ssh<span class="w"> </span>hbase-0004<span class="w"> </span><span class="s2">&quot;find /data/nginx/logs/ -type f -mtime +3 -delete&quot;</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>ssh<span class="w"> </span>hbase-0004<span class="w"> </span><span class="s2">&quot;: &gt; /data/nginx/logs/access.log; : &gt; /data/nginx/logs/error.log&quot;</span>
+</code></pre></div>
+<p><strong>效果：</strong> nginx 日志 12G → 1.5G</p>
+<hr />
+<h3 id="_12">第五步：清理后磁盘状态<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>hbase-0001: 96% (41G 空闲)  ← 从 100% 降到 96%
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>hbase-0002: 92% (80G 空闲)  ← 未变化
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>hbase-0003: 94% (65G 空闲)  ← 从 100% 降到 94%
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>hbase-0004: 91% (89G 空闲)  ← 略降
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>hbase-0005: 76% (237G 空闲) ← 未变化
+</code></pre></div>
+<hr />
+<h3 id="hbase_1">第六步：恢复 HBase 集群<a class="headerlink" href="#hbase_1" title="Permanent link">&para;</a></h3>
+<h4 id="hmaster-regionserver">确认 HMaster + RegionServer 状态<a class="headerlink" href="#hmaster-regionserver" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>HMaster<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span>grep
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="c1"># 无输出 → HMaster 已停止</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="k">for</span><span class="w"> </span>host<span class="w"> </span><span class="k">in</span><span class="w"> </span>hbase-0001<span class="w"> </span>hbase-0002<span class="w"> </span>hbase-0003<span class="w"> </span>hbase-0004<span class="w"> </span>hbase-0005<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span>ssh<span class="w"> </span><span class="nv">$host</span><span class="w"> </span><span class="s2">&quot;ps aux | grep HRegionServer | grep -v grep | wc -l&quot;</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="k">done</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># 全部输出 0 → 5 节点 RS 全部死亡</span>
+</code></pre></div>
+<h4 id="hbase_2">启动 HBase 集群<a class="headerlink" href="#hbase_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nb">cd</span><span class="w"> </span>/data/hbase-2.4.9/bin<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./start-hbase.sh
+</code></pre></div>
+<h4 id="hbase-0001-regionserver">补充启动 hbase-0001 的 RegionServer<a class="headerlink" href="#hbase-0001-regionserver" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nb">cd</span><span class="w"> </span>/data/hbase-2.4.9/bin<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./hbase-daemon.sh<span class="w"> </span>start<span class="w"> </span>regionserver
+</code></pre></div>
+<h4 id="_13">恢复结果<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>=== hbase-0001 RS ===  1  :white_check_mark:
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>=== hbase-0002 RS ===  1  :white_check_mark:
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>=== hbase-0003 RS ===  1  :white_check_mark:
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>=== hbase-0004 RS ===  1  :white_check_mark:
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>=== hbase-0005 RS ===  1  :white_check_mark:
+</code></pre></div>
+<hr />
+<h3 id="phoenix-query-server">第七步：恢复 Phoenix Query Server<a class="headerlink" href="#phoenix-query-server" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>ssh<span class="w"> </span>hbase-0004<span class="w"> </span><span class="s2">&quot;cd /data/phoenix-queryserver-6.0.0/bin &amp;&amp; ./queryserver.py start&quot;</span>
+</code></pre></div>
+<p><strong>结果：</strong> 端口 8765 恢复监听，Phoenix 连接恢复正常。</p>
+<hr />
+<h3 id="hdfsdatanode-safemode">第八步：修复 HDFS（DataNode + SafeMode）<a class="headerlink" href="#hdfsdatanode-safemode" title="Permanent link">&para;</a></h3>
+<p>hbase-0005 的 DataNode 未启动：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>ssh<span class="w"> </span>hbase-0005<span class="w"> </span><span class="s2">&quot;cd /data/hadoop-3.2.2/bin &amp;&amp; ./hdfs --daemon start datanode&quot;</span>
+</code></pre></div>
+<p>NameNode 处于安全模式（因磁盘满导致 DataNode 下线触发）：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>hdfs<span class="w"> </span>dfsadmin<span class="w"> </span>-safemode<span class="w"> </span>leave
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="c1"># Safe mode is OFF :white_check_mark:</span>
+</code></pre></div>
+<hr />
+<h3 id="hdfs-balancer">第九步：HDFS 数据再均衡（Balancer）<a class="headerlink" href="#hdfs-balancer" title="Permanent link">&para;</a></h3>
+<h4 id="balancer">为什么需要 Balancer<a class="headerlink" href="#balancer" title="Permanent link">&para;</a></h4>
+<p>各节点 HDFS 数据分布严重不均（hbase-0005 空闲 237G，其他节点均满），需要把数据从满的节点迁移到空闲节点。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># 设置迁移带宽 50MB/s（不影响业务）</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>hdfs<span class="w"> </span>dfsadmin<span class="w"> </span>-setBalancerBandwidth<span class="w"> </span><span class="m">51200000</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="c1"># 后台启动 balancer，阈值 10%</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>nohup<span class="w"> </span>hdfs<span class="w"> </span>balancer<span class="w"> </span>-threshold<span class="w"> </span><span class="m">10</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/hdfs-balancer.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+</code></pre></div>
+<h4 id="balancer_1">Balancer 运行进度<a class="headerlink" href="#balancer_1" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>初始</th>
+<th>运行 40 分钟后</th>
+<th>趋势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hbase-0003</td>
+<td>~80%+</td>
+<td>48%</td>
+<td>:chart_increasing: 大量搬出后，正在接收数据</td>
+</tr>
+<tr>
+<td>hbase-0002</td>
+<td>85%</td>
+<td>76%</td>
+<td>:chart_decreasing: 持续搬出</td>
+</tr>
+<tr>
+<td>hbase-0004</td>
+<td>82%</td>
+<td>77%</td>
+<td>:chart_decreasing: 持续搬出</td>
+</tr>
+<tr>
+<td>hbase-0001</td>
+<td>67%</td>
+<td>67%</td>
+<td>稳定</td>
+</tr>
+<tr>
+<td>hbase-0005</td>
+<td>70%</td>
+<td>68%</td>
+<td>稳定</td>
+</tr>
+</tbody>
+</table>
+<p>目标：各节点差距 &lt; 10%，最终稳定在 65%-75% 区间。</p>
+<hr />
+<h2 id="material-chart-success">:material-chart-success: 四、最终成果<a class="headerlink" href="#material-chart-success" title="Permanent link">&para;</a></h2>
+<h3 id="_14">清理前后磁盘对比<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>清理前</th>
+<th>清理后</th>
+<th>释放</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hbase-0001</td>
+<td>988G (100%)</td>
+<td>724G (76%)</td>
+<td>~264G</td>
+</tr>
+<tr>
+<td>hbase-0002</td>
+<td>877G (92%)</td>
+<td>877G (92%)</td>
+<td>等待 balancer</td>
+</tr>
+<tr>
+<td>hbase-0003</td>
+<td>957G (100%)</td>
+<td>371G (39%)</td>
+<td>~586G</td>
+</tr>
+<tr>
+<td>hbase-0004</td>
+<td>879G (92%)</td>
+<td>869G (91%)</td>
+<td>~10G</td>
+</tr>
+<tr>
+<td>hbase-0005</td>
+<td>720G (76%)</td>
+<td>721G (76%)</td>
+<td>稳定</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_15">各组件恢复状态<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>恢复状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HMaster</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 运行中 (hbase-0001)</td>
+</tr>
+<tr>
+<td>RegionServer × 5</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 全部运行</td>
+</tr>
+<tr>
+<td>Phoenix Query Server</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 端口 8765 监听</td>
+</tr>
+<tr>
+<td>HDFS DataNode × 5</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 全部运行</td>
+</tr>
+<tr>
+<td>HDFS SafeMode</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 已退出</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hbase-0001">hbase-0001 目录清理前后对比<a class="headerlink" href="#hbase-0001" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>清理前</th>
+<th>清理后</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/data/pricemonitor</code></td>
+<td>125G</td>
+<td>18G</td>
+</tr>
+<tr>
+<td><code>/data/pricemonitor/logs/error.log</code></td>
+<td>15G</td>
+<td>0 (已清空)</td>
+</tr>
+<tr>
+<td><code>/data/pricemonitor/logs/apiError.log</code></td>
+<td>15G</td>
+<td>0 (已清空)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hbase-0003">hbase-0003 目录清理前后对比<a class="headerlink" href="#hbase-0003" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>清理前</th>
+<th>清理后</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/data/docker</code></td>
+<td>65G</td>
+<td>20G</td>
+</tr>
+<tr>
+<td><code>/data/onlyoffice*</code></td>
+<td>~20G</td>
+<td>少量残留</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_16"><img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/26a0.svg" title=":warning:" /> 五、关键注意事项<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<h3 id="_17">可以清理<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/data/spark-3.0.3-bin-hadoop3.2/work/</code></td>
+<td>Spark 临时工作目录（7 天前可安全删除）</td>
+</tr>
+<tr>
+<td><code>/data/nginx/logs/</code></td>
+<td>Nginx 历史日志</td>
+</tr>
+<tr>
+<td><code>/data/hbase-2.4.9/logs/</code></td>
+<td>HBase 旧 .log 文件</td>
+</tr>
+<tr>
+<td><code>/data/pricemonitor/logs/</code></td>
+<td>业务日志归档</td>
+</tr>
+<tr>
+<td><code>/data/docker</code> 无用镜像/容器</td>
+<td><code>docker system prune</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_18"><img alt="⛔" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/26d4.svg" title=":no_entry:" /> 绝对不能清理<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/data/hadoop-3.2.2/data/</code></td>
+<td><strong>HDFS DataNode 核心数据</strong></td>
+</tr>
+<tr>
+<td>HDFS 上的 HBase 表数据</td>
+<td>通过 <code>hadoop fs -rm</code> 删除</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_19">清理文件正确姿势<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>正在被写入的文件</strong>：用 <code>: &gt; filename</code> 清空内容，不要用 <code>rm</code>——<code>rm</code> 后程序句柄仍指向已删除文件，磁盘空间不会释放</li>
+<li><strong>历史归档文件</strong>：可以用 <code>find ... -mtime +N -delete</code></li>
+<li><strong>Docker</strong>：先用 <code>docker system prune</code> 不用 <code>--volumes</code>，确认后再决定是否清理 volumes</li>
+</ul>
+<hr />
+<h2 id="balancer_2"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m10 17-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9m-6-6a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1m7 0h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2"/></svg></span> 六、Balancer 完成 — 后置核查<a class="headerlink" href="#balancer_2" title="Permanent link">&para;</a></h2>
+<h3 id="hdfs-2218">最终 HDFS 数据分布（22:18）<a class="headerlink" href="#hdfs-2218" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>DFS 使用率</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hbase-0001</td>
+<td>73.09%</td>
+<td>高位</td>
+</tr>
+<tr>
+<td>hbase-0003</td>
+<td>58.08%</td>
+<td>最低（原始数据较少）</td>
+</tr>
+<tr>
+<td>hbase-0003</td>
+<td>67.08%</td>
+<td>稳定</td>
+</tr>
+<tr>
+<td>hbase-0004</td>
+<td>67.05%</td>
+<td>稳定</td>
+</tr>
+<tr>
+<td>hbase-0005</td>
+<td>72.54%</td>
+<td>从 84% 降下</td>
+</tr>
+<tr>
+<td>hbase-0002</td>
+<td>71.36%</td>
+<td>从 80% 降下</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>最大差距：73.09% - 58.08% = <strong>15%</strong>，远好于初始的 <strong>48%</strong> 差距。<br />
+Balancer 此时已自然退出（<code>Done</code>），残余数据块仍在传输中继续微调。</p>
+</blockquote>
+<h3 id="2218">最终磁盘空间核查（22:18）<a class="headerlink" href="#2218" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>用量</th>
+<th>可用</th>
+<th>使用率</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hbase-0003</td>
+<td>610G</td>
+<td>347G</td>
+<td>64%</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 最优</td>
+</tr>
+<tr>
+<td>hbase-0005</td>
+<td>696G</td>
+<td>261G</td>
+<td>73%</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 正常</td>
+</tr>
+<tr>
+<td>hbase-0001</td>
+<td>725G</td>
+<td>233G</td>
+<td>76%</td>
+<td><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 正常</td>
+</tr>
+<tr>
+<td>hbase-0002</td>
+<td>748G</td>
+<td>209G</td>
+<td>79%</td>
+<td><img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/26a0.svg" title=":warning:" /> 偏高</td>
+</tr>
+<tr>
+<td>hbase-0004</td>
+<td>756G</td>
+<td>201G</td>
+<td>80%</td>
+<td><img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/26a0.svg" title=":warning:" /> 偏高</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论：</strong> 所有节点均有 200G+ 可用空间，短期无风险。空间主要占用为 <code>/data/hadoop-3.2.2</code>（HDFS 数据），其他服务占用在合理范围（1-6G/节点）。</p>
+<hr />
+<h2 id="_20"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5M11 7h2v6h-2m0 2h2v2h-2"/></svg></span> 七、预防措施<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<h3 id="1-pricemonitor">1. 配置 pricemonitor 日志轮转<a class="headerlink" href="#1-pricemonitor" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>ssh<span class="w"> </span>hbase-0001<span class="w"> </span><span class="s1">&#39;cat &gt; /etc/logrotate.d/pricemonitor &lt;&lt; &#39;</span><span class="se">\&#39;</span><span class="s1">&#39;EOF&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="s1">/data/pricemonitor/logs/*.log {</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="s1">    daily</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="s1">    rotate 7</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="s1">    missingok</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="s1">    notifempty</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="s1">    compress</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="s1">    copytruncate</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="s1">}</span>
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39; &amp;&amp; logrotate -f /etc/logrotate.d/pricemonitor&#39;</span>
+</code></pre></div>
+<h3 id="2-nginx">2. 配置 Nginx 日志轮转<a class="headerlink" href="#2-nginx" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>ssh<span class="w"> </span>hbase-0004<span class="w"> </span><span class="s1">&#39;cat &gt; /etc/logrotate.d/nginx-hbase &lt;&lt; &#39;</span><span class="se">\&#39;</span><span class="s1">&#39;EOF&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="s1">/data/nginx/logs/*.log {</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="s1">    daily</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="s1">    rotate 7</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="s1">    missingok</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="s1">    notifempty</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="s1">    compress</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="s1">    delaycompress</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="s1">    sharedscripts</span>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="s1">    postrotate</span>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="s1">        [ -f /data/nginx/logs/nginx.pid ] &amp;&amp; kill -USR1 `cat /data/nginx/logs/nginx.pid`</span>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="s1">    endscript</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="s1">}</span>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39; &amp;&amp; echo &quot;配置已创建&quot;&#39;</span>
+</code></pre></div>
+<h3 id="3-spark">3. 配置 Spark 自动清理<a class="headerlink" href="#3-spark" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="k">for</span><span class="w"> </span>host<span class="w"> </span><span class="k">in</span><span class="w"> </span>hbase-0001<span class="w"> </span>hbase-0002<span class="w"> </span>hbase-0003<span class="w"> </span>hbase-0004<span class="w"> </span>hbase-0005<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">    </span>ssh<span class="w"> </span><span class="nv">$host</span><span class="w"> </span><span class="s2">&quot;echo -e &#39;\n# 开启 Worker 自动清理\nspark.worker.cleanup.enabled=true\nspark.worker.cleanup.appDataTtl=604800\nspark.worker.cleanup.interval=1800&#39; &gt;&gt; /data/spark-3.0.3-bin-hadoop3.2/conf/spark-defaults.conf&quot;</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="k">done</span>
+</code></pre></div>
+<h3 id="4">4. 建议添加磁盘监控脚本<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/root/check_cluster.sh<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="s">#!/bin/bash</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="s">echo &quot;===== $(date) =====&quot;</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="s">echo &quot;&quot;</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="s">echo &quot;--- 磁盘使用率 ---&quot;</span>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="s">for host in hbase-0001 hbase-0002 hbase-0003 hbase-0004 hbase-0005; do</span>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="s">    echo -n &quot;$host: &quot;</span>
+<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="s">    ssh $host &quot;df -h /data | tail -1 | awk &#39;{print \$5, \$4}&#39;&quot;</span>
+<a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="s">done</span>
+<a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="s">echo &quot;&quot;</span>
+<a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a><span class="s">echo &quot;--- HBase RS ---&quot;</span>
+<a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a><span class="s">for host in hbase-0001 hbase-0002 hbase-0003 hbase-0004 hbase-0005; do</span>
+<a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a><span class="s">    echo -n &quot;$host: &quot;</span>
+<a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a><span class="s">    ssh $host &quot;ps aux | grep HRegionServer | grep -v grep | wc -l&quot; 2&gt;/dev/null</span>
+<a id="__codelineno-22-15" name="__codelineno-22-15" href="#__codelineno-22-15"></a><span class="s">done</span>
+<a id="__codelineno-22-16" name="__codelineno-22-16" href="#__codelineno-22-16"></a><span class="s">echo &quot;&quot;</span>
+<a id="__codelineno-22-17" name="__codelineno-22-17" href="#__codelineno-22-17"></a><span class="s">echo &quot;--- PQS ---&quot;</span>
+<a id="__codelineno-22-18" name="__codelineno-22-18" href="#__codelineno-22-18"></a><span class="s">ssh hbase-0004 &quot;netstat -tulnp | grep 8765 | wc -l&quot; 2&gt;/dev/null</span>
+<a id="__codelineno-22-19" name="__codelineno-22-19" href="#__codelineno-22-19"></a><span class="s">EOF</span>
+<a id="__codelineno-22-20" name="__codelineno-22-20" href="#__codelineno-22-20"></a>chmod<span class="w"> </span>+x<span class="w"> </span>/root/check_cluster.sh
+</code></pre></div>
+<h3 id="5-hdfs-balancer">5. 定期执行 HDFS Balancer<a class="headerlink" href="#5-hdfs-balancer" title="Permanent link">&para;</a></h3>
+<p>建议每月执行一次，保持各节点 HDFS 数据均衡：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>hdfs<span class="w"> </span>dfsadmin<span class="w"> </span>-setBalancerBandwidth<span class="w"> </span><span class="m">51200000</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>nohup<span class="w"> </span>hdfs<span class="w"> </span>balancer<span class="w"> </span>-threshold<span class="w"> </span><span class="m">10</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/hdfs-balancer.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+</code></pre></div>
+<hr />
+<h2 id="_21"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 19v-2H8v2zm0-6v-2H8v2zM8 7h13V5H8zM4 5v2h2V5zM3 5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zm1 6v2h2v-2zm-1 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zm1 6v2h2v-2zm-1 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg></span> 八、故障处理检查清单<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 排查磁盘占用大户 <code>du -sh /data/* | sort -rh</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 清理业务日志历史归档 <code>find ... -name '*.log.*' -mtime +7 -delete</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 清空当前大日志文件 <code>: &gt; /data/xxx/logs/error.log</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Docker prune 清理 <code>docker system prune -a -f</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 检查清理后磁盘 <code>df -h /data</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 检查 HBase RegionServer 进程</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 检查 HMaster 进程</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 启动 HBase 集群（如需要）</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 检查 Phoenix Query Server 端口</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 检查 HDFS DataNode 进程</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 退出 HDFS 安全模式（如需要）</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 运行 HDFS Balancer 均衡数据</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 验证 pricemonitor-bigdata 不再刷 502 错误</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 配置 logrotate 防止再次堆积</li>
+</ul>
+<hr />
+<h2 id="_22"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg></span> 九、经验总结<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>磁盘 85% 是警戒线，100% 会连锁崩溃</strong>：磁盘满 → HBase RegionServer 停 → HMaster 停 → PQS 502 → 日志暴涨 → 恶性循环</li>
+<li><strong>先清理再恢复</strong>：不要直接重启服务，磁盘满时启动大概率再次失败</li>
+<li><strong>清空文件用 <code>: &gt;</code> 而非 <code>rm</code></strong>：保护程序的文件句柄不被破坏</li>
+<li><strong>根本原因是 HDFS 数据分布不均</strong>：通过 Balancer 自动均衡是根本解决方案</li>
+<li><strong>logrotate 是必备措施</strong>：所有核心服务的日志目录都应配置自动轮转</li>
+</ol>
+<hr />
+<p><img alt="📆" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c6.svg" title=":calendar:" /> <strong>最后更新</strong>：2026-06-04 22:22<br />
+<img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> <strong>处理结果</strong>：✅ HBase 集群恢复 | ✅ Phoenix 服务恢复 | ✅ Pricemonitor 服务恢复 | ✅ HDFS Balancer 已完成（各节点 64%-80%，可用 200G+）<br />
+<img alt="💻" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4bb.svg" title=":computer:" /> <strong>影响范围</strong>：HBase 集群 5 节点<br />
+<img alt="🕒" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f552.svg" title=":clock3:" /> <strong>停机时间</strong>：约 30 分钟（从排查到 HBase 完全恢复）</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

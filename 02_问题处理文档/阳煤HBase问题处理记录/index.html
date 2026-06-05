@@ -1,0 +1,3557 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="部署文档、故障排查、版本升级查阅站点">
+      
+      
+      
+      
+        <link rel="prev" href="../%E7%A7%9F%E6%88%B7%E5%85%A8%E9%87%8F%E4%BB%BB%E5%8A%A1%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/">
+      
+      
+        <link rel="next" href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>HBase/Phoenix + Kafka 禁用改造 - 问题处理记录 - 研发实施运维知识库</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hbasephoenix-kafka-" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="研发实施运维知识库" class="md-header__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            研发实施运维知识库
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              HBase/Phoenix + Kafka 禁用改造 - 问题处理记录
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00_%E8%AF%B4%E6%98%8E/" class="md-tabs__link">
+          
+  
+  
+  00 说明
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+          
+  
+  
+  01 常用工具文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  02 问题处理文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+          
+  
+  
+  03 项目技术架构文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/" class="md-tabs__link">
+          
+  
+  
+  04 研发内部设计
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-tabs__link">
+          
+  
+  
+  05 附件资源
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-tabs__link">
+          
+  
+  
+  99 文档模板
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="研发实施运维知识库" class="md-nav__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    研发实施运维知识库
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00 说明
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    00 说明
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_%E8%AF%B4%E6%98%8E/AI%E6%96%87%E6%A1%A3%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI 文档生成规则使用说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_%E8%AF%B4%E6%98%8E/%E4%B8%AA%E4%BA%BA%E7%9F%A5%E8%AF%86%E5%BA%93%E9%83%A8%E7%BD%B2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MkDocs + GitHub Pages 知识库部署使用手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 常用工具文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 常用工具文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常用工具文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/ES%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E5%8F%A5%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elasticsearch 常用语句记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/HBase_Spark%E9%9B%86%E7%BE%A4%E6%8E%92%E6%9F%A5%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase / Spark 集群排查与运维命令手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/Spark%E4%BB%BB%E5%8A%A1Jar%E5%8C%85%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spark 任务 Jar 包管理机制说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/k8s%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes 运维常用命令手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E6%97%B6%E6%95%88%E6%80%A7%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5%E6%80%9D%E8%B7%AF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测时效性相关问题排查思路
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    传统服务器运维常用命令手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 问题处理文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 问题处理文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    问题处理文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ES%E9%9B%86%E7%BE%A4%E5%86%99%E5%85%A5%E6%8B%92%E7%BB%9D%E6%8E%92%E6%9F%A5%E4%BC%98%E5%8C%96%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elasticsearch 集群写入拒绝排查与优化报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HBase%E9%9B%86%E7%BE%A4%E7%A3%81%E7%9B%98%E6%BB%A1%E5%AF%BC%E8%87%B4%E6%9C%8D%E5%8A%A1%E4%B8%AD%E6%96%AD%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase 集群磁盘满导致服务中断排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Phoenix_QueryServer_%E5%AE%95%E6%9C%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phoenix QueryServer 频繁宕机排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RabbitMQ%E5%AE%95%E6%9C%BA%E4%B8%8ERedis%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RabbitMQ 宕机与 Redis 内存溢出排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%A7%9F%E6%88%B7%E5%85%A8%E9%87%8F%E4%BB%BB%E5%8A%A1%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    租户全量任务卡死问题排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase/Phoenix + Kafka 禁用改造 - 问题处理记录
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase/Phoenix + Kafka 禁用改造 - 问题处理记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、核心目标
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、核心目标">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        涉及服务模块
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、已完成的修改
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="二、已完成的修改">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenixhbase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、Phoenix/HBase 改造
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、Phoenix/HBase 改造">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 配置文件修改
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-mock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 新增 Mock 配置类
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-phoenixdatasourceconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 修改 PhoenixDataSourceConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-sqlgeneratorconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 修改 SqlGeneratorConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 修改 Service 层依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、Kafka 禁用改造
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="二、Kafka 禁用改造">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 配置文件修改
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-kafka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Kafka 组件条件加载
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 其他服务检查结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三、技术要点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、技术要点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 改造技术要点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phoenix 改造技术要点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        条件注解机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-datasource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mock DataSource 设计
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        防御性编程
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 禁用技术要点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kafka 禁用技术要点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        双重保障机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么需要双重保障？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        依赖保留原因
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        四、待处理问题
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="四、待处理问题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        可能还需要修改的文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chart-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :chart-line: 五、改造效果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=":chart-line: 五、改造效果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 改造效果
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 禁用效果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        六、下一步建议
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="六、下一步建议">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        测试验证
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        后续优化
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        七、关键经验
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="七、关键经验">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 改造经验
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 禁用经验
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        八、相关文件清单
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="八、相关文件清单">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 改造相关文件
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phoenix 改造相关文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        已修改文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        无需修改的文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 禁用相关文件
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kafka 禁用相关文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        已配置文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        已有条件注解的文件（无需修改）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        无需处理的文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        九、排查思路
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="九、排查思路">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 相关报错排查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 相关报错排查
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 项目技术架构文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03 项目技术架构文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    项目技术架构文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E5%B9%B3%E5%8F%B0%20-%20%E9%A1%B9%E7%9B%AE%E6%B5%81%E7%A8%8B%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测平台 - 项目流程文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E6%B6%88%E6%81%AF%E7%94%9F%E6%88%90%E9%93%BE%E8%B7%AF%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测平台 - 消息生成链路说明文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 研发内部设计
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    04 研发内部设计
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    研发内部设计
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中海油报表及异常商品监测记录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    中海油报表及异常商品监测记录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E6%8A%A5%E8%A1%A8%E5%8F%8A%E5%BC%82%E5%B8%B8%E5%95%86%E5%93%81%E7%9B%91%E6%B5%8B%E8%AE%B0%E5%BD%95/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E5%81%8F%E5%B7%AE%E7%8E%87%E9%A2%84%E8%AD%A6%E9%9C%80%E6%B1%82%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中海油偏差率预警需求设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    华能消费帮扶
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    华能消费帮扶
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E7%8B%AC%E7%AB%8B%E7%A7%9F%E6%88%B7%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    华能消费帮扶独立租户代码修改说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E9%9C%80%E6%B1%82%E8%BF%BD%E8%B8%AA%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    华能消费帮扶独立租户需求追踪记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阳煤商品治理
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    阳煤商品治理
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E4%BA%BA%E5%B7%A5%E5%B9%B2%E9%A2%84%E7%89%B9%E6%AE%8A%E5%A4%84%E7%90%86-%E5%89%8D%E7%AB%AF%E5%AF%B9%E6%8E%A5%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    人工干预特殊处理 - 前端对接说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%AE%A1%E6%A0%B8%E8%A7%84%E5%88%99SAAS%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    审核规则 SAAS 数据同步功能设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%BC%82%E5%B8%B8%E4%B8%8A%E6%8A%A5%E6%95%B0%E6%8D%AE%E5%90%91SAAS%E4%BC%A0%E8%BE%93%E9%80%BB%E8%BE%91%E8%B0%83%E6%95%B4-%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E6%96%BD%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    异常上报数据向SAAS传输逻辑调整 - 设计与实施文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E5%8C%B9%E9%85%8D%E6%9C%8D%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    研发简要设计卡片 - 标准商品治理匹配服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%A0%B8%E9%AA%8C%E5%A4%B1%E8%B4%A5%E7%B1%BB%E5%9E%8B%E5%88%86%E7%B1%BB%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    标准商品治理核验失败类型分类方案设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E5%8F%8C%E7%A7%9F%E6%88%B7ID%E6%94%AF%E6%8C%81%E6%94%B9%E9%80%A0%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阳煤双租户ID支持改造说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E7%A7%9F%E6%88%B7%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阳煤租户标准商品治理数据同步功能设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_%E7%A0%94%E5%8F%91%E5%86%85%E9%83%A8%E8%AE%BE%E8%AE%A1/%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%A6%96%E9%A1%B5%E7%BB%9F%E8%AE%A1%E6%8E%A5%E5%8F%A3%E6%96%B0%E5%A2%9E%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页统计接口新增功能设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 附件资源
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    05 附件资源
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附件资源
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    99 文档模板
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    99 文档模板
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    文档模板
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、核心目标
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、核心目标">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        涉及服务模块
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、已完成的修改
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="二、已完成的修改">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenixhbase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、Phoenix/HBase 改造
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、Phoenix/HBase 改造">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 配置文件修改
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-mock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 新增 Mock 配置类
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-phoenixdatasourceconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 修改 PhoenixDataSourceConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-sqlgeneratorconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 修改 SqlGeneratorConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 修改 Service 层依赖
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、Kafka 禁用改造
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="二、Kafka 禁用改造">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 配置文件修改
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-kafka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Kafka 组件条件加载
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 其他服务检查结果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三、技术要点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、技术要点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 改造技术要点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phoenix 改造技术要点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        条件注解机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-datasource" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mock DataSource 设计
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        防御性编程
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 禁用技术要点
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kafka 禁用技术要点">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        双重保障机制
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么需要双重保障？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        依赖保留原因
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        四、待处理问题
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="四、待处理问题">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        可能还需要修改的文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chart-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        :chart-line: 五、改造效果
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=":chart-line: 五、改造效果">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 改造效果
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 禁用效果
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        六、下一步建议
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="六、下一步建议">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        测试验证
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        后续优化
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        七、关键经验
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="七、关键经验">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 改造经验
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 禁用经验
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        八、相关文件清单
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="八、相关文件清单">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 改造相关文件
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phoenix 改造相关文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        已修改文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        无需修改的文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 禁用相关文件
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Kafka 禁用相关文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        已配置文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        已有条件注解的文件（无需修改）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        无需处理的文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        九、排查思路
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="九、排查思路">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phoenix_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phoenix 相关报错排查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kafka_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kafka 相关报错排查
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="hbasephoenix-kafka-"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m13.78 15.3 6 6 2.11-2.16-6-6zm3.72-5.2c-.39 0-.81-.05-1.14-.19L4.97 21.25l-2.11-2.11 7.41-7.4L8.5 9.96l-.72.7-1.45-1.41v2.86l-.7.7-3.52-3.56.7-.7h2.81l-1.4-1.41 3.56-3.56a2.976 2.976 0 0 1 4.22 0L9.89 5.74l1.41 1.4-.71.71 1.79 1.78 1.82-1.88c-.14-.33-.2-.75-.2-1.12a3.49 3.49 0 0 1 3.5-3.52c.59 0 1.11.14 1.58.42L16.41 6.2l1.5 1.5 2.67-2.67c.28.47.42.97.42 1.6 0 1.92-1.55 3.47-3.5 3.47"/></svg></span> HBase/Phoenix + Kafka 禁用改造 - 问题处理记录<a class="headerlink" href="#hbasephoenix-kafka-" title="Permanent link">&para;</a></h1>
+<p><img alt="📆" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c6.svg" title=":calendar:" /> <strong>记录时间</strong>：2026-04-23</p>
+<hr />
+<h2 id="_1"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 2v2.07A8 8 0 0 0 4.07 11H2v2h2.07A8 8 0 0 0 11 19.93V22h2v-2.07A8 8 0 0 0 19.93 13H22v-2h-2.07A8 8 0 0 0 13 4.07V2m-2 4.08V8h2V6.09c2.5.41 4.5 2.41 4.92 4.91H16v2h1.91c-.41 2.5-2.41 4.5-4.91 4.92V16h-2v1.91C8.5 17.5 6.5 15.5 6.08 13H8v-2H6.09C6.5 8.5 8.5 6.5 11 6.08M12 11a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1"/></svg></span> 一、核心目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>将项目中的 <strong>HBase/Phoenix 数据源</strong>和 <strong>Kafka 消息队列</strong>改为<strong>可选依赖</strong>，使代码可以在不使用这些中间件的地区（如阳煤租户）部署。</p>
+<h3 id="_2">涉及服务模块<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>阳煤租户仅使用以下四个服务：</p>
+<ul>
+<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> <code>bssc-biz-interchange</code> - 数据交换平台</li>
+<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> <code>bssc-biz-entpur</code> - 租户端业务管理</li>
+<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> <code>bssc-biz-operate</code> - 运营平台（唯一使用 Phoenix 和 Kafka 的服务）</li>
+<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> <code>bssc-sys-entpur</code> - 租户端系统管理</li>
+</ul>
+<hr />
+<h2 id="_3"><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> 二、已完成的修改<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="phoenixhbase">一、Phoenix/HBase 改造<a class="headerlink" href="#phoenixhbase" title="Permanent link">&para;</a></h3>
+<h4 id="1">1. 配置文件修改<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<p><strong>文件：</strong> <code>bssc-biz-operate/src/main/resources/application-huayang.yml</code></p>
+<ul>
+<li>添加 <code>spring.datasource.phoenix.enabled: false</code></li>
+<li>保留原有 Phoenix 配置（方便切换）</li>
+</ul>
+<hr />
+<h4 id="2-mock">2. 新增 Mock 配置类<a class="headerlink" href="#2-mock" title="Permanent link">&para;</a></h4>
+<p><strong>文件：</strong> <code>PhoenixMockConfig.java</code>（新建）</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@Configuration</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nd">@ConditionalOnProperty</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spring.datasource.phoenix.enabled&quot;</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">                       </span><span class="n">havingValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;false&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">matchIfMissing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PhoenixMockConfig</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nd">@Bean</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;phoenixDataSource&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">DataSource</span><span class="w"> </span><span class="nf">mockPhoenixDataSource</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">        </span><span class="c1">// 返回匿名内部类实现的 DataSource</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">        </span><span class="c1">// getConnection() 抛出 IllegalStateException 提示</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h4 id="3-phoenixdatasourceconfig">3. 修改 PhoenixDataSourceConfig<a class="headerlink" href="#3-phoenixdatasourceconfig" title="Permanent link">&para;</a></h4>
+<p><strong>文件：</strong> <code>PhoenixDataSourceConfig.java</code></p>
+<ul>
+<li>添加 <code>@ConditionalOnProperty(name = "spring.datasource.phoenix.enabled", havingValue = "true", matchIfMissing = false)</code></li>
+<li>修复事务管理器注入方式（从调用方法改为注入参数）</li>
+</ul>
+<hr />
+<h4 id="4-sqlgeneratorconfig">4. 修改 SqlGeneratorConfig<a class="headerlink" href="#4-sqlgeneratorconfig" title="Permanent link">&para;</a></h4>
+<p><strong>文件：</strong> <code>SqlGeneratorConfig.java</code></p>
+<ul>
+<li>添加相同的条件注解</li>
+<li>当 Phoenix 禁用时，不创建 <code>phoenixSqlGenerator</code> Bean</li>
+</ul>
+<hr />
+<h4 id="5-service">5. 修改 Service 层依赖<a class="headerlink" href="#5-service" title="Permanent link">&para;</a></h4>
+<p><strong>文件：</strong> <code>SyncGoodsWithCatalogForEntpurServiceImpl.java</code></p>
+<ul>
+<li><code>phoenixDataSource</code> 改为 <code>@Autowired(required = false)</code></li>
+<li><code>sqlGenerator</code> 改为 <code>@Autowired(required = false)</code></li>
+<li>方法开头添加空指针检查：
+  <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">phoenixDataSource</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">sqlGenerator</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">&quot;Phoenix 数据源未启用，跳过...&quot;</span><span class="p">);</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">}</span>
+</code></pre></div></li>
+<li>删除多余的外层 try-catch 块</li>
+</ul>
+<hr />
+<h3 id="kafka">二、Kafka 禁用改造<a class="headerlink" href="#kafka" title="Permanent link">&para;</a></h3>
+<h4 id="1_1">1. 配置文件修改<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h4>
+<p><strong>文件：</strong> <code>bssc-biz-operate/src/main/resources/application-huayang.yml</code></p>
+<p><strong>排除自动配置：</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">spring</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">autoconfigure</span><span class="p">:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">exclude</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration</span>
+</code></pre></div></p>
+<p><strong>注释 Kafka 配置：</strong>
+- 第 81-124 行：所有 <code>spring.kafka.*</code> 配置已注释
+- 包括：<code>bootstrap-servers</code>、<code>producer</code>、<code>consumer</code>、<code>listener</code>、<code>ssl</code> 等全部配置</p>
+<hr />
+<h4 id="2-kafka">2. Kafka 组件条件加载<a class="headerlink" href="#2-kafka" title="Permanent link">&para;</a></h4>
+<p><strong>文件：</strong> <code>MessageProducer.java</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nd">@Component</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nd">@ConditionalOnProperty</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spring.kafka.bootstrap-servers&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MessageProducer</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="c1">// Kafka 消息生产者</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>文件：</strong> <code>NewFlowResultConsumer.java</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nd">@Component</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nd">@ConditionalOnProperty</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spring.kafka.bootstrap-servers&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">NewFlowResultConsumer</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="nd">@KafkaListener</span><span class="p">(...)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">consume</span><span class="p">(...)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="c1">// Kafka 消息消费者</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>说明：</strong></p>
+<ul>
+<li>两个 Kafka 组件都添加了 <code>@ConditionalOnProperty</code> 条件注解</li>
+<li>当配置文件中不存在 <code>spring.kafka.bootstrap-servers</code>时，这些 Bean 不会加载</li>
+<li>配合 <code>KafkaAutoConfiguration</code> 排除，确保 Kafka 完全禁用</li>
+</ul>
+<hr />
+<h4 id="3">3. 其他服务检查结果<a class="headerlink" href="#3" title="Permanent link">&para;</a></h4>
+<ul>
+<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> <code>bssc-biz-interchange</code> - 无 Kafka 依赖</li>
+<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> <code>bssc-biz-entpur</code> - 无 Kafka 依赖</li>
+<li><img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> <code>bssc-sys-entpur</code> - 无 Kafka 依赖</li>
+</ul>
+<hr />
+<h2 id="_4"><img alt="🔧" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f527.svg" title=":wrench:" /> 三、技术要点<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="phoenix">Phoenix 改造技术要点<a class="headerlink" href="#phoenix" title="Permanent link">&para;</a></h3>
+<h4 id="_5">条件注解机制<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>@ConditionalOnProperty</code> 根据配置项决定是否加载 Bean</li>
+<li><code>matchIfMissing = false</code>：配置不存在时不加载（安全默认值）</li>
+<li>两个配置类互斥：一个启用时另一个不加载</li>
+</ul>
+<h4 id="mock-datasource">Mock DataSource 设计<a class="headerlink" href="#mock-datasource" title="Permanent link">&para;</a></h4>
+<ul>
+<li>使用<strong>匿名内部类</strong>而非动态代理（避免 NPE）</li>
+<li>实现所有 DataSource 接口方法</li>
+<li><code>getConnection()</code> 抛出清晰的异常提示</li>
+</ul>
+<h4 id="_6">防御性编程<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<ul>
+<li>可选注入：<code>@Autowired(required = false)</code></li>
+<li>使用前检查：<code>if (xxx == null) return;</code></li>
+<li>日志记录：warn 级别提示功能已跳过</li>
+</ul>
+<hr />
+<h3 id="kafka_1">Kafka 禁用技术要点<a class="headerlink" href="#kafka_1" title="Permanent link">&para;</a></h3>
+<h4 id="_7">双重保障机制<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>排除自动配置</strong>：<code>spring.autoconfigure.exclude</code> 阻止 Spring Boot 自动配置 Kafka</li>
+<li><strong>条件注解</strong>：<code>@ConditionalOnProperty</code> 确保 Kafka 组件在未配置时不加载</li>
+</ol>
+<h4 id="_8">为什么需要双重保障？<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<ul>
+<li>仅排除自动配置：如果代码中有 <code>@KafkaListener</code>，仍会尝试创建相关 Bean 导致启动失败</li>
+<li>仅条件注解：如果忘记加条件注解的组件会报错</li>
+<li>双重保障：确保万无一失</li>
+</ul>
+<h4 id="_9">依赖保留原因<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>pom.xml</code> 中仍保留 <code>spring-kafka</code> 依赖</li>
+<li>原因：其他环境（test/online）需要使用 Kafka</li>
+<li>影响：无负面影响，通过条件控制是否加载</li>
+</ul>
+<hr />
+<h2 id="_10"><img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/26a0.svg" title=":warning:" /> 四、待处理问题<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<h3 id="_11">可能还需要修改的文件<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p>项目中可能有其他 Service 也注入了 Phoenix 相关的 Mapper，如果遇到类似错误需要继续修改：</p>
+<ul>
+<li>将 Mapper 注入改为 <code>@Autowired(required = false)</code></li>
+<li>在使用处添加空指针检查</li>
+</ul>
+<hr />
+<h2 id="chart-line">:chart-line: 五、改造效果<a class="headerlink" href="#chart-line" title="Permanent link">&para;</a></h2>
+<h3 id="phoenix_1">Phoenix 改造效果<a class="headerlink" href="#phoenix_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phoenix.enabled = false</code></td>
+<td>不加载 Phoenix 配置，使用 Mock DataSource，跳过 Phoenix 相关功能</td>
+</tr>
+<tr>
+<td><code>phoenix.enabled = true</code></td>
+<td>正常加载 Phoenix 配置，连接 HBase，执行完整功能</td>
+</tr>
+<tr>
+<td>配置缺失</td>
+<td>默认禁用（<code>matchIfMissing = false</code>）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="kafka_2">Kafka 禁用效果<a class="headerlink" href="#kafka_2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>无 <code>spring.kafka.bootstrap-servers</code> 配置</td>
+<td>Kafka 自动配置被排除，Kafka 组件不加载</td>
+</tr>
+<tr>
+<td>有 <code>spring.kafka.bootstrap-servers</code> 配置</td>
+<td>Kafka 正常启动，生产者和消费者正常工作</td>
+</tr>
+<tr>
+<td>配置缺失</td>
+<td>默认禁用（配合自动配置排除）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_12"><img alt="💡" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4a1.svg" title=":light_bulb:" /> 六、下一步建议<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<h3 id="_13">测试验证<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>测试启动</strong></li>
+<li>确认不再报 Phoenix 相关错误</li>
+<li>确认不再报 Kafka 相关错误</li>
+<li>验证 MySQL 连接成功后应用能正常启动</li>
+</ol>
+<h3 id="_14">后续优化<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>批量修改其他 Service</strong>（如需要）</li>
+<li>搜索所有注入 Phoenix Mapper 的地方</li>
+<li>
+<p>统一改为可选注入 + 空指针检查</p>
+</li>
+<li>
+<p><strong>其他环境配置同步</strong></p>
+</li>
+<li>为 test/local/online 等环境添加 <code>phoenix.enabled</code> 配置</li>
+<li>确保各环境 Kafka 配置正确</li>
+</ol>
+<hr />
+<h2 id="_15"><img alt="📝" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4dd.svg" title=":memo:" /> 七、关键经验<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<h3 id="phoenix_2">Phoenix 改造经验<a class="headerlink" href="#phoenix_2" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>不要直接删除配置类</strong> → 会导致 Bean 注入失败</li>
+<li><strong>使用条件注解</strong> → 一套代码多环境适配</li>
+<li><strong>Mock Bean 用匿名内部类</strong> → 比动态代理更稳定</li>
+<li><strong>前置检查优于异常捕获</strong> → 逻辑更清晰</li>
+</ol>
+<h3 id="kafka_3">Kafka 禁用经验<a class="headerlink" href="#kafka_3" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>双重保障更安全</strong> → 自动配置排除 + 条件注解</li>
+<li><strong>依赖可以保留</strong> → 通过配置控制是否加载，无需修改 pom.xml</li>
+<li><strong>检查所有 @KafkaListener</strong> → 确保都有条件注解保护</li>
+</ol>
+<hr />
+<h2 id="_16"><img alt="📄" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c4.svg" title=":page_facing_up:" /> 八、相关文件清单<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<h3 id="phoenix_3">Phoenix 改造相关文件<a class="headerlink" href="#phoenix_3" title="Permanent link">&para;</a></h3>
+<h4 id="_17">已修改文件<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>bssc-biz-operate/src/main/resources/application-huayang.yml</code> - 添加 phoenix.enabled 配置</li>
+<li><code>bssc-biz-operate/src/main/java/com/bssc/maint/operate/config/PhoenixMockConfig.java</code> - 新建 Mock 配置类</li>
+<li><code>bssc-biz-operate/src/main/java/com/bssc/maint/operate/config/PhoenixDataSourceConfig.java</code> - Phoenix 数据源配置</li>
+<li><code>bssc-biz-operate/src/main/java/com/bssc/maint/operate/config/SqlGeneratorConfig.java</code> - SQL 生成器配置</li>
+<li><code>bssc-biz-operate/src/main/java/com/bssc/maint/operate/service/impl/SyncGoodsWithCatalogForEntpurServiceImpl.java</code> - Service 实现类</li>
+</ul>
+<h4 id="_18">无需修改的文件<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>bssc-biz-interchange</code> - 无 Phoenix 依赖</li>
+<li><code>bssc-biz-entpur</code> - 无 Phoenix 依赖</li>
+<li><code>bssc-sys-entpur</code> - 无 Phoenix 依赖</li>
+</ul>
+<hr />
+<h3 id="kafka_4">Kafka 禁用相关文件<a class="headerlink" href="#kafka_4" title="Permanent link">&para;</a></h3>
+<h4 id="_19">已配置文件<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>bssc-biz-operate/src/main/resources/application-huayang.yml</code> </li>
+<li>排除 Kafka 自动配置</li>
+<li>注释所有 Kafka 相关配置</li>
+</ul>
+<h4 id="_20">已有条件注解的文件（无需修改）<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>bssc-biz-operate/src/main/java/com/bssc/maint/operate/kafka/MessageProducer.java</code> - 已有 <code>@ConditionalOnProperty</code></li>
+<li><code>bssc-biz-operate/src/main/java/com/bssc/maint/operate/kafka/NewFlowResultConsumer.java</code> - 已有 <code>@ConditionalOnProperty</code></li>
+</ul>
+<h4 id="_21">无需处理的文件<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>bssc-biz-interchange</code> - 无 Kafka 依赖</li>
+<li><code>bssc-biz-entpur</code> - 无 Kafka 依赖</li>
+<li><code>bssc-sys-entpur</code> - 无 Kafka 依赖</li>
+</ul>
+<hr />
+<h2 id="_22"><img alt="🔍" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f50d.svg" title=":mag:" /> 九、排查思路<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h2>
+<h3 id="phoenix_4">Phoenix 相关报错排查<a class="headerlink" href="#phoenix_4" title="Permanent link">&para;</a></h3>
+<ol>
+<li>检查错误是否与 Phoenix 相关</li>
+<li>如果是 Phoenix 相关，确认是否已正确添加条件注解</li>
+<li>检查 <code>phoenix.enabled</code> 配置是否正确</li>
+<li>查看具体哪个 Bean 注入失败，定位到对应的 Service</li>
+</ol>
+<h3 id="kafka_5">Kafka 相关报错排查<a class="headerlink" href="#kafka_5" title="Permanent link">&para;</a></h3>
+<ol>
+<li>检查是否有 <code>KafkaAutoConfiguration</code> 相关错误</li>
+<li>确认 <code>application-huayang.yml</code> 中已排除 Kafka 自动配置</li>
+<li>检查所有 <code>@KafkaListener</code> 是否都有 <code>@ConditionalOnProperty</code> 注解</li>
+<li>确认 <code>spring.kafka.bootstrap-servers</code> 配置已注释或删除</li>
+</ol>
+<hr />
+<blockquote>
+<p><img alt="📆" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4c6.svg" title=":calendar:" /> <strong>最后更新</strong>：2026-04-23<br />
+<img alt="✅" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2705.svg" title=":white_check_mark:" /> <strong>状态</strong>：✅ Phoenix 改造完成 | ✅ Kafka 禁用完成<br />
+<img alt="💻" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4bb.svg" title=":computer:" /> <strong>涉及服务</strong>：bssc-biz-operate（唯一需要改造的服务）<br />
+<img alt="ℹ" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/2139.svg" title=":information_source:" /> <strong>其他服务</strong>：bssc-biz-interchange、bssc-biz-entpur、bssc-sys-entpur（无需修改）</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
