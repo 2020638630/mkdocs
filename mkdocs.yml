@@ -1,0 +1,18 @@
+site_name: 研发实施运维知识库
+site_description: 部署文档、故障排查、版本升级查阅站点
+docs_dir: 部门研发运维知识库
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+plugins:
+  - search
+exclude_docs: |
+  04_研发内部设计/**
+markdown_extensions:
+  - toc:
+      permalink: true
