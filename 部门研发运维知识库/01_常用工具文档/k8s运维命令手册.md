@@ -1,5 +1,10 @@
 # :material-kubernetes: Kubernetes 运维常用命令手册
 
+:material-file-document-edit: **文档类型**: 工具手册 |
+:material-account-clock: **更新时间**: 2026-06-04 |
+:material-account: **维护人**: 研发团队 |
+:material-tag: **标签**: Kubernetes, k8s, 容器编排, 运维命令, Pod管理
+
 ---
 
 ## :material-clipboard-list: Pod 相关命令

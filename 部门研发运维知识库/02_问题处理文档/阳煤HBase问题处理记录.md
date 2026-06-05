@@ -1,5 +1,11 @@
 # :material-hammer-wrench: HBase/Phoenix + Kafka 禁用改造 - 问题处理记录
 
+:material-file-document-edit: **文档类型**: 故障排查 |
+:material-alert-circle: **优先级**: 🟡 中 |
+:material-account-clock: **发生时间**: 2026-04-23 |
+:material-account: **处理人**: 研发团队 |
+:material-tag: **标签**: HBase, Phoenix, Kafka, 禁用改造, 阳煤, 可选依赖
+
 :calendar: **记录时间**：2026-04-23
 
 ---

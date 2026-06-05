@@ -1,5 +1,11 @@
 # :material-harddisk-remove: HBase 集群磁盘满导致服务中断排查报告
 
+:material-file-document-edit: **文档类型**: 故障排查 |
+:material-alert-circle: **优先级**: 🔴 高 |
+:material-account-clock: **发生时间**: 2026-06-04 |
+:material-account: **处理人**: 研发团队 |
+:material-tag: **标签**: HBase, 磁盘满, 服务中断, RegionServer, HDFS, WAL
+
 :calendar: **记录时间**：2026-06-04
 
 ---

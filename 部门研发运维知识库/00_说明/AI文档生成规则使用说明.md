@@ -11,14 +11,15 @@
 
 ### 1.1 文件位置
 
-:material-file: **规则文件路径**: `D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md`
+:material-file: **规则文件路径**: `D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc`
 
 :material-information: **作用**
 
 该规则文件用于指导AI在生成知识库文档时：
 1. 自动归类到正确的文件夹
-2. 应用MkDocs Material美化规范
-3. 确保文档格式统一、美观
+2. 添加标准化标签头部（文档类型、时间、维护人、**标签**）
+3. 应用MkDocs Material美化规范
+4. 确保文档格式统一、美观、可检索
 
 ### 1.2 规则内容概览
 
@@ -28,9 +29,12 @@
 |------|------|------|
 | 一、知识库目录结构 | 定义文件夹结构和归类规则 | 帮助AI正确分类文档 |
 | 二、文档美化规范 | MkDocs Material格式化规则 | 确保文档美观、专业 |
-| 三、文档生成流程 | AI生成文档的标准流程 | 规范化生成过程 |
-| 四、示例模板 | 各类文档的模板 | 快速生成标准文档 |
-| 五、注意事项 | 常见错误、安全规范和避坑指南 | **含密码安全红线规则** |
+| 　2.1 标签化元数据 | 5种文档类型的标准化头部格式 | **所有文档必选标签字段** |
+| 　2.2 标签命名规范 | 标签选取原则与格式规则 | 3~6个标签，英文逗号分隔 |
+| 　2.3 图标使用规范 | 22个常用场景图标速查表 | 英文冒号，禁止中文冒号 |
+| 三、文档生成流程 | AI生成文档的标准流程 | 含提取标签关键词步骤 |
+| 四、示例模板 | 4种文档类型的完整模板 | 工具手册/故障排查/功能设计/部署指南 |
+| 五、注意事项 | 安全红线、常见错误、存量文档规范调整 | **含密码安全红线 + 5.5存量文档批量规范化流程** |
 
 ---
 
@@ -43,14 +47,14 @@
 在CodeBuddy对话中，直接引用规则文件：
 
 ```
-请按照 D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md 
+请按照 D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc 
 中的规则，帮我生成一份【文档标题】文档，并保存到【目录路径】
 ```
 
 **示例**：
 
 ```
-请按照 D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md 
+请按照 D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc 
 中的规则，帮我生成一份"Redis缓存优化方案"文档，
 并保存到 D:\Work\Dev-KB\部门研发运维知识库\04_研发内部设计\ 目录下
 ```
@@ -79,10 +83,11 @@
 **指令内容**:
 ```
 请按照以下规则生成文档：
-1. 读取规则文件：D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md
+1. 读取规则文件：D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc
 2. 根据文档内容归类到正确的知识库目录
-3. 应用MkDocs Material美化规范
-4. 生成后保存到指定路径
+3. 添加标准化标签头部（文档类型、时间、维护人、标签）
+4. 应用MkDocs Material美化规范
+5. 生成后保存到指定路径
 
 文档需求：【在这里描述你要生成的文档内容】
 ```
@@ -113,7 +118,11 @@
 
 :material-brush: **核心规范**
 
-#### 3.2.1 文档头部信息
+#### 3.2.1 文档头部信息（标签化元数据）
+
+每个文档标题后必须添加标准化标签头部，所有字段用 `|` 分隔，**标签字段为必选**。
+
+**通用格式**（部署指南、使用指南类）：
 
 ```markdown
 # 文档标题
@@ -121,8 +130,39 @@
 :material-file-document-edit: **文档类型**: 类型说明 |
 :material-account-clock: **更新时间**: YYYY-MM-DD |
 :material-account: **维护人**: 姓名 |
-:material-tag: **标签**: 标签1, 标签2
+:material-tag: **标签**: 标签1, 标签2, 标签3
 ```
+
+**故障排查类** — 额外包含优先级和发生时间：
+
+```markdown
+:material-file-document-edit: **文档类型**: 故障排查 |
+:material-alert-circle: **优先级**: 🔴 高 |
+:material-account-clock: **发生时间**: YYYY-MM-DD |
+:material-account: **处理人**: 研发团队 |
+:material-tag: **标签**: 故障组件, 故障现象, 涉及服务
+```
+
+**工具手册类**：
+
+```markdown
+:material-file-document-edit: **文档类型**: 工具手册 |
+:material-account-clock: **更新时间**: YYYY-MM-DD |
+:material-account: **维护人**: 研发团队 |
+:material-tag: **标签**: 组件名, 功能分类, 环境
+```
+
+**功能设计类** — 可选增加涉及模块：
+
+```markdown
+:material-file-document-edit: **文档类型**: 功能设计 |
+:material-api: **涉及模块**: 模块名 |
+:material-account-clock: **更新时间**: YYYY-MM-DD |
+:material-account: **维护人**: 研发团队 |
+:material-tag: **标签**: 租户名, 功能分类, 技术方案
+```
+
+> :material-tag: **标签选取原则**：技术关键字优先 → 项目/租户名 → 功能/模块名 → 问题/场景标识，每文档 3~6 个标签，英文逗号分隔。
 
 #### 3.2.2 图标使用
 
@@ -253,7 +293,7 @@ AI 生成文档时必须遵守以下安全规则：
 
 :material-information: **修改方式**
 
-1. 打开规则文件：`D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md`
+1. 打开规则文件：`D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc`
 2. 修改对应章节内容
 3. 保存文件
 4. 后续AI生成文档时会自动应用新规则
@@ -266,6 +306,7 @@ AI 生成文档时必须遵守以下安全规则：
 
 | 版本 | 日期 | 更新内容 | 更新人 |
 |------|------|---------|---------|
+| v1.1 | 2026-06-05 | 所有模板强制增加标签字段；新增标签命名规范(2.2)；新增部署指南模板(4.4)；完善图标速查表；新增存量文档规范调整说明(5.5)；统一图标命名 | AI Assistant |
 | v1.0 | 2026-06-05 | 初始版本，定义文档生成规则 | AI Assistant |
 
 ### 6.2 维护建议
@@ -299,8 +340,9 @@ AI 生成文档时必须遵守以下安全规则：
 :material-file-document: **参考文档**
 
 - `00_说明/个人知识库部署.md` - 知识库部署指南
-- `01_常用工具文档/ES 常用语句记录.md` - 文档美化示例
-- `02_问题处理文档/ES集群写入拒绝排查优化报告.md` - 报告美化示例
+- `02_问题处理文档/Phoenix_QueryServer_Namespace_Mapping_排查报告.md` - 标签化头部参考模板
+- `01_常用工具文档/ES 常用语句记录.md` - 工具手册美化示例
+- `02_问题处理文档/ES集群写入拒绝排查优化报告.md` - 故障排查报告美化示例
 
 ---
 
@@ -308,10 +350,11 @@ AI 生成文档时必须遵守以下安全规则：
 
 :material-check-all: **核心要点**
 
-1. :white_check_mark: 规则文件位置：`D:\Program Files (x86)\pricemonitor\.codebuddy\ai-doc-rules.md`
+1. :white_check_mark: 规则文件位置：`D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc`
 2. :white_check_mark: 使用方式：对话引用、自定义指令、快捷指令
-3. :white_check_mark: 美化规范：图标、提示框、可折叠内容、代码块
-4. :white_check_mark: 目录归类：根据文档类型自动归类到对应文件夹
+3. :white_check_mark: 标签化头部：文档类型 + 时间 + 维护人 + **必选标签**（3~6个）
+4. :white_check_mark: 美化规范：图标、提示框、可折叠内容、代码块
+5. :white_check_mark: 目录归类：根据文档类型自动归类到对应文件夹
 
 :material-lightbulb-on: **建议**
 

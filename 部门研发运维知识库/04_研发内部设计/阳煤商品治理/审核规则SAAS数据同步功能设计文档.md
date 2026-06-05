@@ -1,5 +1,12 @@
 # 审核规则 SAAS 数据同步功能设计文档
 
+:material-file-document-edit: **文档类型**: 功能设计 |
+:material-account-clock: **更新时间**: 2026-04-21 |
+:material-account: **维护人**: lilinlin |
+:material-tag: **标签**: 审核规则, SAAS, 数据同步, bssc-biz-operate, 私有化部署
+
+---
+
 :material-file-document: **文档信息**
 
 | 项目 | 内容 |

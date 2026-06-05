@@ -1,5 +1,11 @@
 # :material-database-alert: Elasticsearch 集群写入拒绝排查与优化报告
 
+:material-file-document-edit: **文档类型**: 故障排查 |
+:material-alert-circle: **优先级**: 🔴 高 |
+:material-account-clock: **发生时间**: 2026-06-04 |
+:material-account: **处理人**: 研发团队 |
+:material-tag: **标签**: Elasticsearch, 写入拒绝, bulk queue, 集群优化, es_rejected_execution_exception
+
 ---
 
 ## :material-information: 基本信息

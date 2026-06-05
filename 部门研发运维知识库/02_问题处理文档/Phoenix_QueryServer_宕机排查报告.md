@@ -1,5 +1,11 @@
 # :material-server-off: Phoenix QueryServer 频繁宕机排查报告
 
+:material-file-document-edit: **文档类型**: 故障排查 |
+:material-alert-circle: **优先级**: 🔴 高 |
+:material-account-clock: **发生时间**: 2026-06-04 |
+:material-account: **处理人**: 研发团队 |
+:material-tag: **标签**: Phoenix, QueryServer, 宕机, JVM, GC, HBase
+
 ---
 
 ## :material-information: 基本信息

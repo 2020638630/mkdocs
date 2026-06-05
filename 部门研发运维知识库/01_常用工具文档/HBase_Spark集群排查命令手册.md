@@ -1,5 +1,10 @@
 # :material-server-network: HBase / Spark 集群排查与运维命令手册
 
+:material-file-document-edit: **文档类型**: 工具手册 |
+:material-account-clock: **更新时间**: 2026-06-04 |
+:material-account: **维护人**: 研发团队 |
+:material-tag: **标签**: HBase, Spark, 集群运维, 命令手册, 磁盘排查
+
 > **适用集群**: 5 节点 HBase 2.4.9 + Spark 3.0.3 Standalone 集群  
 > **节点**: hbase-0001 ~ hbase-0005
 

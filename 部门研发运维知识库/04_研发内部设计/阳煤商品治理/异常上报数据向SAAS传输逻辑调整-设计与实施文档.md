@@ -1,5 +1,12 @@
 # 异常上报数据向SAAS传输逻辑调整 - 设计与实施文档
 
+:material-file-document-edit: **文档类型**: 功能设计 |
+:material-account-clock: **更新时间**: 2026-04-30 |
+:material-account: **维护人**: 研发团队 |
+:material-tag: **标签**: 异常上报, SAAS, 数据传输, 逻辑调整, 阳煤
+
+---
+
 **文档版本**: v1.0  
 **创建日期**: 2026-04-30  
 **最后更新**: 2026-04-30  

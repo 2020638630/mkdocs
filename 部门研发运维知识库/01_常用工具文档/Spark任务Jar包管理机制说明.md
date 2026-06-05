@@ -1,5 +1,10 @@
 # Spark 任务 Jar 包管理机制说明
 
+:material-file-document-edit: **文档类型**: 工具手册 |
+:material-account-clock: **更新时间**: 2026-06-04 |
+:material-account: **维护人**: 研发团队 |
+:material-tag: **标签**: Spark, Jar包, Standalone, 分布式计算, SparkSubmit
+
 :material-information: **适用场景**: Spark Standalone 模式（`spark://IP:7077`）  
 :material-server: **项目环境**: pricemonitor 多模块 Maven 项目  
 :material-rocket: **Spark 版本**: 3.0.3

@@ -1,5 +1,10 @@
 # :material-magnify: Elasticsearch 常用语句记录
 
+:material-file-document-edit: **文档类型**: 工具手册 |
+:material-account-clock: **更新时间**: 2026-06-04 |
+:material-account: **维护人**: 研发团队 |
+:material-tag: **标签**: Elasticsearch, ES查询, Kibana, Dev Tools
+
 > 本文档记录了价格监控项目中常用的 Elasticsearch 查询语句。
 
 ---
