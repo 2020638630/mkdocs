@@ -11,7 +11,9 @@
 
 ### 1.1 文件位置
 
-:material-file: **规则文件路径**: `D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc`
+:material-file: **规则源文件**（CodeBuddy Rules 引擎读取）: `D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc`
+
+:material-link: **线上浏览版**（本文档所在知识库，可直接点击查看完整内容）: [**AI文档生成规则.md**](../99_文档模板/AI文档生成规则.md)
 
 :material-information: **作用**
 
@@ -293,7 +295,7 @@ AI 生成文档时必须遵守以下安全规则：
 
 :material-information: **修改方式**
 
-1. 打开规则文件：`D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc`
+1. 打开规则文件：[**AI文档生成规则.md**](../99_文档模板/AI文档生成规则.md) 或本地路径 `D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc`
 2. 修改对应章节内容
 3. 保存文件
 4. 后续AI生成文档时会自动应用新规则
@@ -339,6 +341,7 @@ AI 生成文档时必须遵守以下安全规则：
 
 :material-file-document: **参考文档**
 
+- [**99_文档模板/AI文档生成规则.md**](../99_文档模板/AI文档生成规则.md) - **规则文件线上版（点击浏览完整规则）**
 - `00_说明/个人知识库部署.md` - 知识库部署指南
 - `02_问题处理文档/Phoenix_QueryServer_Namespace_Mapping_排查报告.md` - 标签化头部参考模板
 - `01_常用工具文档/ES 常用语句记录.md` - 工具手册美化示例
@@ -350,7 +353,7 @@ AI 生成文档时必须遵守以下安全规则：
 
 :material-check-all: **核心要点**
 
-1. :white_check_mark: 规则文件位置：`D:\Program Files (x86)\pricemonitor\.codebuddy\rules\AI文档生成规则.mdc`
+1. :white_check_mark: 规则文件：[**99_文档模板/AI文档生成规则.md**](../99_文档模板/AI文档生成规则.md)（线上可浏览）
 2. :white_check_mark: 使用方式：对话引用、自定义指令、快捷指令
 3. :white_check_mark: 标签化头部：文档类型 + 时间 + 维护人 + **必选标签**（3~6个）
 4. :white_check_mark: 美化规范：图标、提示框、可折叠内容、代码块
