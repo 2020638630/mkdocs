@@ -1,0 +1,3747 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="部署文档、故障排查、版本升级查阅站点">
+      
+      
+      
+      
+        <link rel="prev" href="../RabbitMQ%20%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E7%BB%93%E6%9E%9C%E9%98%9F%E5%88%97%E5%88%86%E5%8C%BA%E6%B6%88%E8%B4%B9%E4%BC%98%E5%8C%96%20%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/">
+      
+      
+        <link rel="next" href="../../%E4%B8%AD%E6%B5%B7%E6%B2%B9%E6%8A%A5%E8%A1%A8%E5%8F%8A%E5%BC%82%E5%B8%B8%E5%95%86%E5%93%81%E7%9B%91%E6%B5%8B%E8%AE%B0%E5%BD%95/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E5%81%8F%E5%B7%AE%E7%8E%87%E9%A2%84%E8%AD%A6%E9%9C%80%E6%B1%82%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>saveGoodsMergeInfo 性能优化方案 - 研发实施运维知识库</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#savegoodsmergeinfo" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="研发实施运维知识库" class="md-header__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            研发实施运维知识库
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              saveGoodsMergeInfo 性能优化方案
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../00_%E8%AF%B4%E6%98%8E/" class="md-tabs__link">
+          
+  
+  
+  00 说明
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+          
+  
+  
+  01 常用工具文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+          
+  
+  
+  02 问题处理文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-tabs__link">
+          
+  
+  
+  03 项目技术架构文档
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+  04 研发内部设计
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-tabs__link">
+          
+  
+  
+  05 附件资源
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-tabs__link">
+          
+  
+  
+  99 文档模板
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="研发实施运维知识库" class="md-nav__button md-logo" aria-label="研发实施运维知识库" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    研发实施运维知识库
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00 说明
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    00 说明
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../00_%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../00_%E8%AF%B4%E6%98%8E/AI%E6%96%87%E6%A1%A3%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI 文档生成规则使用说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../00_%E8%AF%B4%E6%98%8E/%E4%B8%AA%E4%BA%BA%E7%9F%A5%E8%AF%86%E5%BA%93%E9%83%A8%E7%BD%B2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MkDocs + GitHub Pages 知识库部署使用手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 常用工具文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 常用工具文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常用工具文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/ES%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E5%8F%A5%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elasticsearch 常用语句记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/HBase_Spark%E9%9B%86%E7%BE%A4%E6%8E%92%E6%9F%A5%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase / Spark 集群排查与运维命令手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/Spark%E4%BB%BB%E5%8A%A1Jar%E5%8C%85%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spark 任务 Jar 包管理机制说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/k8s%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes 运维常用命令手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E6%97%B6%E6%95%88%E6%80%A7%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5%E6%80%9D%E8%B7%AF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测时效性相关问题排查思路
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../01_%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E6%89%8B%E5%86%8C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    传统服务器运维常用命令手册
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 问题处理文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 问题处理文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    问题处理文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/ES%E9%9B%86%E7%BE%A4%E5%86%99%E5%85%A5%E6%8B%92%E7%BB%9D%E6%8E%92%E6%9F%A5%E4%BC%98%E5%8C%96%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elasticsearch 集群写入拒绝排查与优化报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/HBase%E9%9B%86%E7%BE%A4%E7%A3%81%E7%9B%98%E6%BB%A1%E5%AF%BC%E8%87%B4%E6%9C%8D%E5%8A%A1%E4%B8%AD%E6%96%AD%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase 集群磁盘满导致服务中断排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/Phoenix_QueryServer_Namespace_Mapping_%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phoenix QueryServer Namespace Mapping 异常排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/Phoenix_QueryServer_%E5%AE%95%E6%9C%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phoenix QueryServer 频繁宕机排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/RabbitMQ%E5%AE%95%E6%9C%BA%E4%B8%8ERedis%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RabbitMQ 宕机与 Redis 内存溢出排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/%E7%A7%9F%E6%88%B7%E5%85%A8%E9%87%8F%E4%BB%BB%E5%8A%A1%E6%8E%92%E6%9F%A5%E6%8A%A5%E5%91%8A/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    租户全量任务卡死问题排查报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../02_%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E6%96%87%E6%A1%A3/%E9%98%B3%E7%85%A4HBase%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HBase/Phoenix + Kafka 禁用改造 - 问题处理记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 项目技术架构文档
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03 项目技术架构文档
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    项目技术架构文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E5%B9%B3%E5%8F%B0%20-%20%E9%A1%B9%E7%9B%AE%E6%B5%81%E7%A8%8B%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测平台 - 项目流程文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../03_%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%96%87%E6%A1%A3/%E6%B6%88%E6%81%AF%E7%94%9F%E6%88%90%E9%93%BE%E8%B7%AF%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    价格监测平台 - 消息生成链路说明文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 研发内部设计
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    04 研发内部设计
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    研发内部设计
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RabbitMq分区消费优化
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    RabbitMq分区消费优化
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RabbitMQ%20%E4%BB%B7%E6%A0%BC%E7%9B%91%E6%B5%8B%E7%BB%93%E6%9E%9C%E9%98%9F%E5%88%97%E5%88%86%E5%8C%BA%E6%B6%88%E8%B4%B9%E4%BC%98%E5%8C%96%20%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RabbitMQ 价格监测结果队列分区消费优化 设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    saveGoodsMergeInfo 性能优化方案
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    saveGoodsMergeInfo 性能优化方案
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、问题现象
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、问题现象">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        典型耗时日志（100条数据/次）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        耗时分布
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、链路流程
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三、根因分析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、根因分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1hisall-mapper-insert-on-duplicate-key-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        根因1：His/All 写入未使用 Mapper 中已定义的 INSERT ... ON DUPLICATE KEY UPDATE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2his-2-expend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        根因2：His 写入时额外同步写 2 张 Expend 表
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        根因3：多线程对同一批行的行锁竞争
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4feign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        根因4：Feign 调用在主链路同步执行
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        四、优化方案
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="四、优化方案">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1hisall-insert-on-duplicate-key-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        方案1（立即见效）：His/All 写入改用 INSERT ... ON DUPLICATE KEY UPDATE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="方案1（立即见效）：His/All 写入改用 INSERT ... ON DUPLICATE KEY UPDATE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#411-goodsmergehismapperxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.1 修改 GoodsMergeHisMapper.xml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#412-goodsmergeallmapperxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.2 修改 GoodsMergeAllMapper.xml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#413-goodsmergehisserviceimpl-goodsmergeallserviceimpl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.3 修改 GoodsMergeHisServiceImpl 和 GoodsMergeAllServiceImpl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#414" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.4 验证清单
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2expend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        方案2（高价值）：Expend 表异步化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3feign-mq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        方案3（高价值）：Feign 调用抽取为 MQ 异步消费
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="方案3（高价值）：Feign 调用抽取为 MQ 异步消费">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-mq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 新增 MQ 消息体
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#432" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.2 主链路修改
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#433-mq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.3 新增 MQ 消费者
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#434-rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.4 RabbitMQ 配置
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-operatetaskid-rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        方案4（架构级）：按 operateTaskId 做 RabbitMQ 消费分区
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        五、优化路线图
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        六、修改对照表
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中海油报表及异常商品监测记录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    中海油报表及异常商品监测记录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E4%B8%AD%E6%B5%B7%E6%B2%B9%E6%8A%A5%E8%A1%A8%E5%8F%8A%E5%BC%82%E5%B8%B8%E5%95%86%E5%93%81%E7%9B%91%E6%B5%8B%E8%AE%B0%E5%BD%95/%E4%B8%AD%E6%B5%B7%E6%B2%B9%E5%81%8F%E5%B7%AE%E7%8E%87%E9%A2%84%E8%AD%A6%E9%9C%80%E6%B1%82%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    中海油偏差率预警需求设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    华能消费帮扶
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    华能消费帮扶
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6/%E5%8D%8E%E8%83%BD%E6%B6%88%E8%B4%B9%E5%B8%AE%E6%89%B6%E7%8B%AC%E7%AB%8B%E7%A7%9F%E6%88%B7%E4%BB%A3%E7%A0%81%E4%BF%AE%E6%94%B9%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    华能消费帮扶独立租户设计方案
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阳煤商品治理
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    阳煤商品治理
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E4%BA%BA%E5%B7%A5%E5%B9%B2%E9%A2%84%E7%89%B9%E6%AE%8A%E5%A4%84%E7%90%86-%E5%89%8D%E7%AB%AF%E5%AF%B9%E6%8E%A5%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    人工干预特殊处理 - 前端对接说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%AE%A1%E6%A0%B8%E8%A7%84%E5%88%99SAAS%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    审核规则 SAAS 数据同步功能设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E5%BC%82%E5%B8%B8%E4%B8%8A%E6%8A%A5%E6%95%B0%E6%8D%AE%E5%90%91SAAS%E4%BC%A0%E8%BE%93%E9%80%BB%E8%BE%91%E8%B0%83%E6%95%B4-%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E6%96%BD%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    异常上报数据向SAAS传输逻辑调整 - 设计与实施文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E5%8C%B9%E9%85%8D%E6%9C%8D%E5%8A%A1%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    研发简要设计卡片 - 标准商品治理匹配服务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%A0%B8%E9%AA%8C%E5%A4%B1%E8%B4%A5%E7%B1%BB%E5%9E%8B%E5%88%86%E7%B1%BB%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    标准商品治理核验失败类型分类方案设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E5%8F%8C%E7%A7%9F%E6%88%B7ID%E6%94%AF%E6%8C%81%E6%94%B9%E9%80%A0%E8%AF%B4%E6%98%8E/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阳煤双租户ID支持改造说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%98%B3%E7%85%A4%E7%A7%9F%E6%88%B7%E6%A0%87%E5%87%86%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    阳煤租户标准商品治理数据同步功能设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../%E9%98%B3%E7%85%A4%E5%95%86%E5%93%81%E6%B2%BB%E7%90%86/%E9%A6%96%E9%A1%B5%E7%BB%9F%E8%AE%A1%E6%8E%A5%E5%8F%A3%E6%96%B0%E5%A2%9E%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页统计接口新增功能设计文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 附件资源
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    05 附件资源
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../05_%E9%99%84%E4%BB%B6%E8%B5%84%E6%BA%90/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附件资源
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    99 文档模板
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    99 文档模板
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    文档模板
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../99_%E6%96%87%E6%A1%A3%E6%A8%A1%E6%9D%BF/AI%E6%96%87%E6%A1%A3%E7%94%9F%E6%88%90%E8%A7%84%E5%88%99/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI 文档生成规则
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、问题现象
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、问题现象">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        典型耗时日志（100条数据/次）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        耗时分布
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、链路流程
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三、根因分析
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、根因分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1hisall-mapper-insert-on-duplicate-key-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        根因1：His/All 写入未使用 Mapper 中已定义的 INSERT ... ON DUPLICATE KEY UPDATE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2his-2-expend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        根因2：His 写入时额外同步写 2 张 Expend 表
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        根因3：多线程对同一批行的行锁竞争
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4feign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        根因4：Feign 调用在主链路同步执行
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        四、优化方案
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="四、优化方案">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1hisall-insert-on-duplicate-key-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        方案1（立即见效）：His/All 写入改用 INSERT ... ON DUPLICATE KEY UPDATE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="方案1（立即见效）：His/All 写入改用 INSERT ... ON DUPLICATE KEY UPDATE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#411-goodsmergehismapperxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.1 修改 GoodsMergeHisMapper.xml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#412-goodsmergeallmapperxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.2 修改 GoodsMergeAllMapper.xml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#413-goodsmergehisserviceimpl-goodsmergeallserviceimpl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.3 修改 GoodsMergeHisServiceImpl 和 GoodsMergeAllServiceImpl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#414" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.4 验证清单
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2expend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        方案2（高价值）：Expend 表异步化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3feign-mq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        方案3（高价值）：Feign 调用抽取为 MQ 异步消费
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="方案3（高价值）：Feign 调用抽取为 MQ 异步消费">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-mq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 新增 MQ 消息体
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#432" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.2 主链路修改
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#433-mq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.3 新增 MQ 消费者
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#434-rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.4 RabbitMQ 配置
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-operatetaskid-rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        方案4（架构级）：按 operateTaskId 做 RabbitMQ 消费分区
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        五、优化路线图
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        六、修改对照表
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="savegoodsmergeinfo">saveGoodsMergeInfo 性能优化方案<a class="headerlink" href="#savegoodsmergeinfo" title="Permanent link">&para;</a></h1>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h4v-1.91L12.09 18H6v-2h8.09l2-2H6v-2h12.09L20 10.09V8l-6-6zm7 1.5L18.5 9H13zm7.15 9.5a.55.55 0 0 0-.4.16l-1.02 1.02 2.09 2.08 1.02-1.01c.21-.22.21-.58 0-.79l-1.3-1.3a.54.54 0 0 0-.39-.16m-2.01 1.77L12 20.92V23h2.08l6.15-6.15z"/></svg></span> <strong>文档类型</strong>: 功能设计 |
+<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 7H5a2 2 0 0 0-2 2v8h2v-4h2v4h2V9a2 2 0 0 0-2-2m0 4H5V9h2m7-2h-4v10h2v-4h2a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2m0 4h-2V9h2m6 0v6h1v2h-4v-2h1V9h-1V7h4v2Z"/></svg></span> <strong>涉及模块</strong>: bssc-biz-entpur / GoodsMergeInfoServiceImpl | 
+<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.63 14.1a7 7 0 0 1 9.27-3.47 7 7 0 0 1 3.47 9.27A6.98 6.98 0 0 1 17 24c-2.7 0-5.17-1.56-6.33-4H1v-2c.06-1.14.84-2.07 2.34-2.82S6.72 14.04 9 14c.57 0 1.11.05 1.63.1M9 4c1.12.03 2.06.42 2.81 1.17S12.93 6.86 12.93 8s-.37 2.08-1.12 2.83-1.69 1.12-2.81 1.12-2.06-.37-2.81-1.12S5.07 9.14 5.07 8s.37-2.08 1.12-2.83S7.88 4.03 9 4m8 18a5 5 0 0 0 5-5 5 5 0 0 0-5-5 5 5 0 0 0-5 5 5 5 0 0 0 5 5m-1-8h1.5v2.82l2.44 1.41-.75 1.3L16 17.69z"/></svg></span> <strong>更新时间</strong>: 2026-06-09 |
+<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg></span> <strong>维护人</strong>: 研发团队 |
+<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.5 7A1.5 1.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4 1.5 1.5 0 0 1 7 5.5 1.5 1.5 0 0 1 5.5 7m15.91 4.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.11 0-2 .89-2 2v7c0 .55.22 1.05.59 1.41l8.99 9c.37.36.87.59 1.42.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.56-.23-1.06-.59-1.42"/></svg></span> <strong>标签</strong>: 价格监测, 性能优化, RabbitMQ, MySQL, INSERT ON DUPLICATE KEY UPDATE</p>
+<hr />
+<h2 id="_1">一、问题现象<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>消息消费链路 <code>saveGoodsMergeInfo</code> 单次处理耗时 <strong>40~48秒</strong>，消费速率极低，导致队列积压约 21 万条消息。</p>
+<h3 id="100">典型耗时日志（100条数据/次）<a class="headerlink" href="#100" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>operateTaskId=2062927446314139649, 
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>查租户=85ms,  查His=1537ms,  查All=2369ms, 
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>dataCount=100, 生成DO=1ms(all=100/his=100), 
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>写His=27145ms(100条),   ← 瓶颈#1：27秒
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>算法=83ms,  生成消息=46ms(100条), 
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>传输消息=2331ms,         ← 瓶颈#3：2.3秒（RPC）
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>写All=8624ms(100条),    ← 瓶颈#2：8.6秒
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>总=42222ms
+</code></pre></div>
+<h3 id="_2">耗时分布<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">环节</th>
+<th style="text-align: right;">耗时</th>
+<th style="text-align: center;">占比</th>
+<th style="text-align: left;">根因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>写His</strong></td>
+<td style="text-align: right;">27秒</td>
+<td style="text-align: center;"><strong>61%</strong></td>
+<td style="text-align: left;">MyBatis-Plus <code>saveBatch</code>/<code>updateBatchById</code> + 额外写 Expend 表 + 行锁竞争</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>写All</strong></td>
+<td style="text-align: right;">8.6秒</td>
+<td style="text-align: center;"><strong>19%</strong></td>
+<td style="text-align: left;">MyBatis-Plus <code>saveBatch</code>/<code>updateBatchById</code> + 行锁竞争</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>传输消息</strong></td>
+<td style="text-align: right;">2.3秒</td>
+<td style="text-align: center;"><strong>5%</strong></td>
+<td style="text-align: left;">同步 RPC 调用 <code>transTDMsgDetails</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">查All</td>
+<td style="text-align: right;">2.4秒</td>
+<td style="text-align: center;"><strong>5%</strong></td>
+<td style="text-align: left;">All 表数据量大，IN 查询回表多</td>
+</tr>
+<tr>
+<td style="text-align: left;">其他</td>
+<td style="text-align: right;">3.5秒</td>
+<td style="text-align: center;"><strong>8%</strong></td>
+<td style="text-align: left;">查His、查租户、算法等</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_3">二、链路流程<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart TD
+    A[MQ消息到达&lt;br/&gt;100条商品数据] --&gt; B[Redis幂等检查]
+    B --&gt; C[查MonitorTask表]
+    C --&gt; D{消息是否complete?}
+    D --&gt;|是| E[createTaskRecord&lt;br/&gt;创建任务执行记录]
+    D --&gt;|否| F[查His表已有记录&lt;br/&gt;按sourceCode分组IN]
+    F --&gt; G[查All表已有记录&lt;br/&gt;按tenantSourceCode+goodsIds IN]
+    G --&gt; H[FOR循环100条]
+    H --&gt; I[内存构造AllDO]
+    I --&gt; J[内存构造HisDO]
+    J --&gt; H
+    H --&gt; K[saveHisAndAllRecord]
+
+    subgraph K ["saveHisAndAllRecord — 核心耗时"]
+        K1[写His表&lt;br/&gt;saveOrUpdateBatchData] --&gt; K1_1["❌ 按id是否为空&lt;br/&gt;分为insert/update两组"]
+        K1_1 --&gt; K1_2["❌ MyBatis-Plus&lt;br/&gt;saveBatch / updateBatchById"]
+        K1_2 --&gt; K1_3["同步写 HisExpend 表&lt;br/&gt;saveBatch"]
+        K1_3 --&gt; K1_4["同步写 HisExpendTwo 表&lt;br/&gt;saveBatch / updateBatchById"]
+        K1_4 --&gt; K2{非私有化租户&lt;br/&gt;且需要生成消息?}
+        K2 --&gt;|是| K3[RPC获取算法&lt;br/&gt;algorithmDetail]
+        K3 --&gt; K4[FOR循环100条&lt;br/&gt;generateMsgDetail]
+        K4 --&gt; K5[RPC传输消息&lt;br/&gt;transTDMsgDetails]
+        K5 --&gt; K6[写All表&lt;br/&gt;saveOrUpdateBatchData]
+        K2 --&gt;|否| K6
+    end
+
+    K6 --&gt; L{ERROR_GOODS?}
+    L --&gt;|是| M[更新异常商品处理状态]
+    L --&gt;|否| N{isRecheckTask&lt;br/&gt;或isCallbackData?}
+    N --&gt;|是| O[RPC changeDealState]
+    N --&gt;|否| P[结束]</code></pre>
+<hr />
+<h2 id="_4">三、根因分析<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="1hisall-mapper-insert-on-duplicate-key-update">根因1：His/All 写入未使用 Mapper 中已定义的 INSERT ... ON DUPLICATE KEY UPDATE<a class="headerlink" href="#1hisall-mapper-insert-on-duplicate-key-update" title="Permanent link">&para;</a></h3>
+<p>Mapper XML 中已定义了高效的批量 upsert SQL（一条 SQL 包含 100 行），但 <strong>ServiceImpl 并未调用它</strong>：</p>
+<details class="example">
+<summary>His Mapper XML — 批量 upsert SQL 已存在</summary>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">&lt;!</span><span class="c1">-- GoodsMergeHisMapper.xml:660-690 — 现状是 REPLACE INTO --&gt;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">&lt;</span><span class="k">update</span><span class="w"> </span><span class="n">id</span><span class="o">=</span><span class="ss">&quot;saveOrUpdateBatchData&quot;</span><span class="o">&gt;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">replace</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">t_goods_merge_his</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">goods_code</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="k">values</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="o">&lt;</span><span class="n">foreach</span><span class="w"> </span><span class="n">collection</span><span class="o">=</span><span class="ss">&quot;goodsMergeHisList&quot;</span><span class="w"> </span><span class="n">item</span><span class="o">=</span><span class="ss">&quot;item&quot;</span><span class="w"> </span><span class="n">separator</span><span class="o">=</span><span class="ss">&quot;,&quot;</span><span class="o">&gt;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="p">(</span><span class="o">#</span><span class="err">{</span><span class="n">item</span><span class="p">.</span><span class="n">id</span><span class="err">}</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="err">{</span><span class="n">item</span><span class="p">.</span><span class="n">goodsCode</span><span class="err">}</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="o">&lt;/</span><span class="n">foreach</span><span class="o">&gt;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="o">&lt;/</span><span class="k">update</span><span class="o">&gt;</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="o">&lt;!</span><span class="c1">-- GoodsMergeAllMapper.xml:482-504 — 现状是 REPLACE INTO --&gt;</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="o">&lt;</span><span class="k">update</span><span class="w"> </span><span class="n">id</span><span class="o">=</span><span class="ss">&quot;saveOrUpdateBatchData&quot;</span><span class="o">&gt;</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="k">replace</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">t_goods_merge_all</span><span class="w"> </span><span class="p">(...)</span><span class="w"> </span><span class="k">values</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="o">&lt;</span><span class="n">foreach</span><span class="w"> </span><span class="n">collection</span><span class="o">=</span><span class="ss">&quot;goodsMergeAllList&quot;</span><span class="w"> </span><span class="n">item</span><span class="o">=</span><span class="ss">&quot;item&quot;</span><span class="w"> </span><span class="n">separator</span><span class="o">=</span><span class="ss">&quot;,&quot;</span><span class="o">&gt;</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="p">(...)</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="o">&lt;/</span><span class="n">foreach</span><span class="o">&gt;</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="o">&lt;/</span><span class="k">update</span><span class="o">&gt;</span>
+</code></pre></div>
+</details>
+<details class="example">
+<summary>His ServiceImpl — 实际调用的是 MyBatis-Plus 原生方法</summary>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// GoodsMergeHisServiceImpl.saveOrUpdateBatchData:232-245</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nd">@Override</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">saveOrUpdateBatchData</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">GoodsMergeHisDO</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goodsMergeHisList</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="n">goodsMergeHisList</span><span class="p">.</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">partitioningBy</span><span class="p">(</span><span class="n">item</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">StrUtil</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getId</span><span class="p">())))</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="p">.</span><span class="na">forEach</span><span class="p">((</span><span class="n">item</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">CollectionUtil</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">(</span><span class="n">list</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">                    </span><span class="k">this</span><span class="p">.</span><span class="na">saveBatch</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">.</span><span class="na">size</span><span class="p">());</span><span class="w">  </span><span class="c1">// ← 非批量upsert，逐条INSERT</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">                    </span><span class="n">saveOrUpdateHisExpend</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">                </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">                    </span><span class="k">this</span><span class="p">.</span><span class="na">updateBatchById</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="p">.</span><span class="na">size</span><span class="p">());</span><span class="w">  </span><span class="c1">// ← 逐条UPDATE</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">                    </span><span class="n">saveOrUpdateHisExpend</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">                </span><span class="p">}</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">        </span><span class="p">});</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="p">}</span>
+</code></pre></div>
+</details>
+<p><strong>后果</strong>：当 id 不为空（已存在记录）时，走的是<strong>逐条 UPDATE</strong>，产生大量 SQL 执行和事务开销。</p>
+<hr />
+<h3 id="2his-2-expend">根因2：His 写入时额外同步写 2 张 Expend 表<a class="headerlink" href="#2his-2-expend" title="Permanent link">&para;</a></h3>
+<p><code>saveOrUpdateHisExpend</code> 方法对每批 100 条 His 记录，还会同步写 Expend 和 ExpendTwo 两张副本表：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// GoodsMergeHisServiceImpl:247-271</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">saveOrUpdateHisExpend</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">GoodsMergeHisDO</span><span class="o">&gt;</span><span class="w"> </span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">isInsert</span><span class="p">){</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="c1">// copy 100条 → Expend + ExpendTwo</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isInsert</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">        </span><span class="n">goodsMergeHisExpendService</span><span class="p">.</span><span class="na">saveBatch</span><span class="p">(</span><span class="n">goodsMergeHisExpendDOS</span><span class="p">);</span><span class="w">     </span><span class="c1">// 额外100条INSERT</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="n">goodsMergeHisExpendTwoService</span><span class="p">.</span><span class="na">saveBatch</span><span class="p">(</span><span class="n">goodsMergeHisExpendTwoDOS</span><span class="p">);</span><span class="w"> </span><span class="c1">// 额外100条INSERT</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">        </span><span class="n">goodsMergeHisExpendService</span><span class="p">.</span><span class="na">updateBatchById</span><span class="p">(</span><span class="n">goodsMergeHisExpendDOS</span><span class="p">);</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">        </span><span class="n">goodsMergeHisExpendTwoService</span><span class="p">.</span><span class="na">updateBatchById</span><span class="p">(</span><span class="n">goodsMergeHisExpendDOS</span><span class="p">);</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>行锁竞争范围扩大 3 倍</strong>：His + Expend + ExpendTwo 三张表竞争同一批行的锁。</p>
+<hr />
+<h3 id="3">根因3：多线程对同一批行的行锁竞争<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p>多个消费者线程（concurrency=20~100）同时处理<strong>同一个 <code>operateTaskId</code></strong> 的消息，MySQL InnoDB 对同一批 <code>(goods_id, source_code, operate_task_id)</code> 行的写入产生大量行锁等待：</p>
+<ul>
+<li>线程 A 持有行锁写 His → 线程 B 等待</li>
+<li>每次 <code>saveBatch</code> 拆分成多条 SQL，锁持有时间长</li>
+<li><code>innodb_lock_wait_timeout</code> 默认 50 秒，超时重试拉低整体吞吐</li>
+</ul>
+<hr />
+<h3 id="4feign">根因4：Feign 调用在主链路同步执行<a class="headerlink" href="#4feign" title="Permanent link">&para;</a></h3>
+<p>链路中存在 3 处同步 Feign RPC 调用，全部阻塞主链路：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">调用</th>
+<th style="text-align: left;">位置</th>
+<th style="text-align: left;">触发条件</th>
+<th style="text-align: center;">耗时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>changeDealState</code></td>
+<td style="text-align: left;"><code>saveGoodsMergeInfo:211</code></td>
+<td style="text-align: left;"><code>isRecheckTask</code> 或 <code>isCallbackDataDirectlyOperation</code></td>
+<td style="text-align: center;">未知</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>algorithmDetail</code></td>
+<td style="text-align: left;"><code>saveHisAndAllRecord:323</code></td>
+<td style="text-align: left;">非私有化租户 且 <code>isGenerateMsg=true</code></td>
+<td style="text-align: center;">~80ms</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>transTDMsgDetails</code></td>
+<td style="text-align: left;"><code>saveHisAndAllRecord:354</code></td>
+<td style="text-align: left;">非私有化租户 且 <code>isGenerateMsg=true</code> 且有消息</td>
+<td style="text-align: center;">1.5~3.7秒</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_5">四、优化方案<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<h3 id="1hisall-insert-on-duplicate-key-update">方案1（立即见效）：His/All 写入改用 INSERT ... ON DUPLICATE KEY UPDATE<a class="headerlink" href="#1hisall-insert-on-duplicate-key-update" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">预期效果</p>
+<p>写 His：27秒 → ~5秒；写 All：8.6秒 → ~3秒，整体耗时降至约 15~20秒，提升约 <strong>2倍</strong></p>
+</div>
+<p><strong>原理</strong>：一条 <code>INSERT ... ON DUPLICATE KEY UPDATE</code> 包含 100 行，只 UPDATE 不 DELETE，替代原来的 <code>partitioningBy</code> 分组 + <code>saveBatch</code> + <code>updateBatchById</code>，大幅减少 SQL 执行次数和事务数量。</p>
+<p><strong>对比</strong>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">对比项</th>
+<th style="text-align: left;">现状（REPLACE INTO XML + MP原生调用）</th>
+<th style="text-align: left;">改后（INSERT ... ON DUPLICATE KEY UPDATE）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">SQL 数量</td>
+<td style="text-align: left;">最多 N+2 条（分组 × 分组 + Expend）</td>
+<td style="text-align: left;"><strong>1 条</strong>（His）+ Expend</td>
+</tr>
+<tr>
+<td style="text-align: left;">事务次数</td>
+<td style="text-align: left;">多次</td>
+<td style="text-align: left;"><strong>1 次</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">索引维护</td>
+<td style="text-align: left;">DELETE + INSERT 两次</td>
+<td style="text-align: left;"><strong>只更新一次</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">锁持有时间</td>
+<td style="text-align: left;">长（多次SQL）</td>
+<td style="text-align: left;"><strong>短（单条SQL）</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="411-goodsmergehismapperxml">4.1.1 修改 <code>GoodsMergeHisMapper.xml</code><a class="headerlink" href="#411-goodsmergehismapperxml" title="Permanent link">&para;</a></h4>
+<p>将现有的 <code>REPLACE INTO</code> 改为 <code>INSERT ... ON DUPLICATE KEY UPDATE</code>，列出所有需要更新的字段：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cm">&lt;!-- GoodsMergeHisMapper.xml:660 — 改为 INSERT ... ON DUPLICATE KEY UPDATE --&gt;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">&lt;insert</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;saveOrUpdateBatchData&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span>INSERT<span class="w"> </span>INTO<span class="w"> </span>t_goods_merge_his<span class="w"> </span>(
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span>id,<span class="w"> </span>goods_code,<span class="w"> </span>reasonable_price,<span class="w"> </span>min_price,<span class="w"> </span>max_price,
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span>update_time,<span class="w"> </span>create_time,<span class="w"> </span>tenant_task_id,<span class="w"> </span>monitoring_time,<span class="w"> </span>task_finish_time,
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span>source_code,<span class="w"> </span>goods_id,<span class="w"> </span>goods_name,<span class="w"> </span>price,<span class="w"> </span>brand_name,<span class="w"> </span>catalog_name,
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">        </span>link,<span class="w"> </span>supplier_name,<span class="w"> </span>praise_rate,<span class="w"> </span>sales_volume,<span class="w"> </span>contain_sensitive_word,
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span>exclusive,<span class="w"> </span>useless,<span class="w"> </span>error_catalog,<span class="w"> </span>task_create_tenant_id,<span class="w"> </span>source_name,
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">        </span>sku,<span class="w"> </span>same_measure_code,<span class="w"> </span>operate_task_id,<span class="w"> </span>source_category,<span class="w"> </span>market_counts,
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">        </span>goverment_counts,<span class="w"> </span>enterprise_counts,<span class="w"> </span>tenant_id,<span class="w"> </span>invalid,<span class="w"> </span>goods_errors,
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">        </span>sensitive_msg,<span class="w"> </span>goods_import_time,<span class="w"> </span>transfer_state,<span class="w"> </span>catalog_one,<span class="w"> </span>catalog_two,
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">        </span>catalog_three,<span class="w"> </span>catalog_four,<span class="w"> </span>catalog_five,<span class="w"> </span>catalog_six,<span class="w"> </span>measure_unit,
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">        </span>bar_image_list,<span class="w"> </span>inside_goods_count,<span class="w"> </span>outside_goods_count,<span class="w"> </span>goods_detail,
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">        </span>original_price,<span class="w"> </span>price_diff,<span class="w"> </span>last_rea_price,<span class="w"> </span>zc_avg_price,<span class="w"> </span>qc_avg_price,
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">        </span>external_min_price_link,<span class="w"> </span>external_max_price_link,
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">        </span>external_min_price_source_category,<span class="w"> </span>external_max_price_source_category,
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">        </span>external_avg_price,<span class="w"> </span>catalog_end_name,<span class="w"> </span>goods_measure_unit,<span class="w"> </span>goods_measure_count,
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">        </span>supplier_comment,<span class="w"> </span>supplier_type,<span class="w"> </span>is_discount,<span class="w"> </span>recommended_catalog,
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">        </span>calculate_process_description
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">    </span>)<span class="w"> </span>VALUES
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">    </span><span class="nt">&lt;foreach</span><span class="w"> </span><span class="na">collection=</span><span class="s">&quot;goodsMergeHisList&quot;</span><span class="w"> </span><span class="na">item=</span><span class="s">&quot;item&quot;</span><span class="w"> </span><span class="na">separator=</span><span class="s">&quot;,&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">        </span>(#{item.id},<span class="w"> </span>#{item.goodsCode},<span class="w"> </span>#{item.reasonablePrice},<span class="w"> </span>#{item.minPrice},
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">         </span>#{item.maxPrice},<span class="w"> </span>#{item.updateTime},<span class="w"> </span>#{item.createTime},<span class="w"> </span>#{item.tenantTaskId},
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="w">         </span>#{item.monitoringTime},<span class="w"> </span>#{item.taskFinishTime},<span class="w"> </span>#{item.sourceCode},<span class="w"> </span>#{item.goodsId},
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="w">         </span>#{item.goodsName},<span class="w"> </span>#{item.price},<span class="w"> </span>#{item.brandName},<span class="w"> </span>#{item.catalogName},
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="w">         </span>#{item.link},<span class="w"> </span>#{item.supplierName},<span class="w"> </span>#{item.praiseRate},<span class="w"> </span>#{item.salesVolume},
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="w">         </span>#{item.containSensitiveWord},<span class="w"> </span>#{item.exclusive},<span class="w"> </span>#{item.useless},<span class="w"> </span>#{item.errorCatalog},
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="w">         </span>#{item.taskCreateTenantId},<span class="w"> </span>#{item.sourceName},<span class="w"> </span>#{item.sku},<span class="w"> </span>#{item.sameMeasureCode},
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="w">         </span>#{item.operateTaskId},<span class="w"> </span>#{item.sourceCategory},<span class="w"> </span>#{item.marketCounts},
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="w">         </span>#{item.govermentCounts},<span class="w"> </span>#{item.enterpriseCounts},<span class="w"> </span>#{item.tenantId},<span class="w"> </span>#{item.invalid},
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="w">         </span>#{item.goodsErrors},<span class="w"> </span>#{item.sensitiveMsg},<span class="w"> </span>#{item.goodsImportTime},
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="w">         </span>#{item.transferState},<span class="w"> </span>#{item.catalogOne},<span class="w"> </span>#{item.catalogTwo},<span class="w"> </span>#{item.catalogThree},
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="w">         </span>#{item.catalogFour},<span class="w"> </span>#{item.catalogFive},<span class="w"> </span>#{item.catalogSix},<span class="w"> </span>#{item.measureUnit},
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="w">         </span>#{item.barImageList},<span class="w"> </span>#{item.insideGoodsCount},<span class="w"> </span>#{item.outsideGoodsCount},
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="w">         </span>#{item.goodsDetail},<span class="w"> </span>#{item.originalPrice},<span class="w"> </span>#{item.priceDiff},<span class="w"> </span>#{item.lastReaPrice},
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="w">         </span>#{item.zcAvgPrice},<span class="w"> </span>#{item.qcAvgPrice},<span class="w"> </span>#{item.externalMinPriceLink},
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a><span class="w">         </span>#{item.externalMaxPriceLink},<span class="w"> </span>#{item.externalMinPriceSourceCategory},
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a><span class="w">         </span>#{item.externalMaxPriceSourceCategory},<span class="w"> </span>#{item.externalAvgPrice},
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a><span class="w">         </span>#{item.catalogEndName},<span class="w"> </span>#{item.goodsMeasureUnit},<span class="w"> </span>#{item.goodsMeasureCount},
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a><span class="w">         </span>#{item.supplierComment},<span class="w"> </span>#{item.supplierType},<span class="w"> </span>#{item.isDiscount},
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a><span class="w">         </span>#{item.recommendedCatalog},<span class="w"> </span>#{item.calculateProcessDescription})
+<a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a><span class="w">    </span><span class="nt">&lt;/foreach&gt;</span>
+<a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="w">    </span>ON<span class="w"> </span>DUPLICATE<span class="w"> </span>KEY<span class="w"> </span>UPDATE
+<a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a><span class="w">        </span>goods_code<span class="w"> </span>=<span class="w"> </span>VALUES(goods_code),
+<a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a><span class="w">        </span>reasonable_price<span class="w"> </span>=<span class="w"> </span>VALUES(reasonable_price),
+<a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a><span class="w">        </span>min_price<span class="w"> </span>=<span class="w"> </span>VALUES(min_price),
+<a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a><span class="w">        </span>max_price<span class="w"> </span>=<span class="w"> </span>VALUES(max_price),
+<a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a><span class="w">        </span>update_time<span class="w"> </span>=<span class="w"> </span>VALUES(update_time),
+<a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a><span class="w">        </span>monitoring_time<span class="w"> </span>=<span class="w"> </span>VALUES(monitoring_time),
+<a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a><span class="w">        </span>task_finish_time<span class="w"> </span>=<span class="w"> </span>VALUES(task_finish_time),
+<a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a><span class="w">        </span>goods_name<span class="w"> </span>=<span class="w"> </span>VALUES(goods_name),
+<a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a><span class="w">        </span>price<span class="w"> </span>=<span class="w"> </span>VALUES(price),
+<a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a><span class="w">        </span>brand_name<span class="w"> </span>=<span class="w"> </span>VALUES(brand_name),
+<a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a><span class="w">        </span>catalog_name<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_name),
+<a id="__codelineno-4-56" name="__codelineno-4-56" href="#__codelineno-4-56"></a><span class="w">        </span>link<span class="w"> </span>=<span class="w"> </span>VALUES(link),
+<a id="__codelineno-4-57" name="__codelineno-4-57" href="#__codelineno-4-57"></a><span class="w">        </span>supplier_name<span class="w"> </span>=<span class="w"> </span>VALUES(supplier_name),
+<a id="__codelineno-4-58" name="__codelineno-4-58" href="#__codelineno-4-58"></a><span class="w">        </span>praise_rate<span class="w"> </span>=<span class="w"> </span>VALUES(praise_rate),
+<a id="__codelineno-4-59" name="__codelineno-4-59" href="#__codelineno-4-59"></a><span class="w">        </span>sales_volume<span class="w"> </span>=<span class="w"> </span>VALUES(sales_volume),
+<a id="__codelineno-4-60" name="__codelineno-4-60" href="#__codelineno-4-60"></a><span class="w">        </span>contain_sensitive_word<span class="w"> </span>=<span class="w"> </span>VALUES(contain_sensitive_word),
+<a id="__codelineno-4-61" name="__codelineno-4-61" href="#__codelineno-4-61"></a><span class="w">        </span>exclusive<span class="w"> </span>=<span class="w"> </span>VALUES(exclusive),
+<a id="__codelineno-4-62" name="__codelineno-4-62" href="#__codelineno-4-62"></a><span class="w">        </span>useless<span class="w"> </span>=<span class="w"> </span>VALUES(useless),
+<a id="__codelineno-4-63" name="__codelineno-4-63" href="#__codelineno-4-63"></a><span class="w">        </span>error_catalog<span class="w"> </span>=<span class="w"> </span>VALUES(error_catalog),
+<a id="__codelineno-4-64" name="__codelineno-4-64" href="#__codelineno-4-64"></a><span class="w">        </span>source_name<span class="w"> </span>=<span class="w"> </span>VALUES(source_name),
+<a id="__codelineno-4-65" name="__codelineno-4-65" href="#__codelineno-4-65"></a><span class="w">        </span>sku<span class="w"> </span>=<span class="w"> </span>VALUES(sku),
+<a id="__codelineno-4-66" name="__codelineno-4-66" href="#__codelineno-4-66"></a><span class="w">        </span>same_measure_code<span class="w"> </span>=<span class="w"> </span>VALUES(same_measure_code),
+<a id="__codelineno-4-67" name="__codelineno-4-67" href="#__codelineno-4-67"></a><span class="w">        </span>source_category<span class="w"> </span>=<span class="w"> </span>VALUES(source_category),
+<a id="__codelineno-4-68" name="__codelineno-4-68" href="#__codelineno-4-68"></a><span class="w">        </span>market_counts<span class="w"> </span>=<span class="w"> </span>VALUES(market_counts),
+<a id="__codelineno-4-69" name="__codelineno-4-69" href="#__codelineno-4-69"></a><span class="w">        </span>goverment_counts<span class="w"> </span>=<span class="w"> </span>VALUES(goverment_counts),
+<a id="__codelineno-4-70" name="__codelineno-4-70" href="#__codelineno-4-70"></a><span class="w">        </span>enterprise_counts<span class="w"> </span>=<span class="w"> </span>VALUES(enterprise_counts),
+<a id="__codelineno-4-71" name="__codelineno-4-71" href="#__codelineno-4-71"></a><span class="w">        </span>tenant_id<span class="w"> </span>=<span class="w"> </span>VALUES(tenant_id),
+<a id="__codelineno-4-72" name="__codelineno-4-72" href="#__codelineno-4-72"></a><span class="w">        </span>invalid<span class="w"> </span>=<span class="w"> </span>VALUES(invalid),
+<a id="__codelineno-4-73" name="__codelineno-4-73" href="#__codelineno-4-73"></a><span class="w">        </span>goods_errors<span class="w"> </span>=<span class="w"> </span>VALUES(goods_errors),
+<a id="__codelineno-4-74" name="__codelineno-4-74" href="#__codelineno-4-74"></a><span class="w">        </span>sensitive_msg<span class="w"> </span>=<span class="w"> </span>VALUES(sensitive_msg),
+<a id="__codelineno-4-75" name="__codelineno-4-75" href="#__codelineno-4-75"></a><span class="w">        </span>goods_import_time<span class="w"> </span>=<span class="w"> </span>VALUES(goods_import_time),
+<a id="__codelineno-4-76" name="__codelineno-4-76" href="#__codelineno-4-76"></a><span class="w">        </span>transfer_state<span class="w"> </span>=<span class="w"> </span>VALUES(transfer_state),
+<a id="__codelineno-4-77" name="__codelineno-4-77" href="#__codelineno-4-77"></a><span class="w">        </span>catalog_one<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_one),
+<a id="__codelineno-4-78" name="__codelineno-4-78" href="#__codelineno-4-78"></a><span class="w">        </span>catalog_two<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_two),
+<a id="__codelineno-4-79" name="__codelineno-4-79" href="#__codelineno-4-79"></a><span class="w">        </span>catalog_three<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_three),
+<a id="__codelineno-4-80" name="__codelineno-4-80" href="#__codelineno-4-80"></a><span class="w">        </span>catalog_four<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_four),
+<a id="__codelineno-4-81" name="__codelineno-4-81" href="#__codelineno-4-81"></a><span class="w">        </span>catalog_five<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_five),
+<a id="__codelineno-4-82" name="__codelineno-4-82" href="#__codelineno-4-82"></a><span class="w">        </span>catalog_six<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_six),
+<a id="__codelineno-4-83" name="__codelineno-4-83" href="#__codelineno-4-83"></a><span class="w">        </span>measure_unit<span class="w"> </span>=<span class="w"> </span>VALUES(measure_unit),
+<a id="__codelineno-4-84" name="__codelineno-4-84" href="#__codelineno-4-84"></a><span class="w">        </span>bar_image_list<span class="w"> </span>=<span class="w"> </span>VALUES(bar_image_list),
+<a id="__codelineno-4-85" name="__codelineno-4-85" href="#__codelineno-4-85"></a><span class="w">        </span>inside_goods_count<span class="w"> </span>=<span class="w"> </span>VALUES(inside_goods_count),
+<a id="__codelineno-4-86" name="__codelineno-4-86" href="#__codelineno-4-86"></a><span class="w">        </span>outside_goods_count<span class="w"> </span>=<span class="w"> </span>VALUES(outside_goods_count),
+<a id="__codelineno-4-87" name="__codelineno-4-87" href="#__codelineno-4-87"></a><span class="w">        </span>goods_detail<span class="w"> </span>=<span class="w"> </span>VALUES(goods_detail),
+<a id="__codelineno-4-88" name="__codelineno-4-88" href="#__codelineno-4-88"></a><span class="w">        </span>original_price<span class="w"> </span>=<span class="w"> </span>VALUES(original_price),
+<a id="__codelineno-4-89" name="__codelineno-4-89" href="#__codelineno-4-89"></a><span class="w">        </span>price_diff<span class="w"> </span>=<span class="w"> </span>VALUES(price_diff),
+<a id="__codelineno-4-90" name="__codelineno-4-90" href="#__codelineno-4-90"></a><span class="w">        </span>last_rea_price<span class="w"> </span>=<span class="w"> </span>VALUES(last_rea_price),
+<a id="__codelineno-4-91" name="__codelineno-4-91" href="#__codelineno-4-91"></a><span class="w">        </span>zc_avg_price<span class="w"> </span>=<span class="w"> </span>VALUES(zc_avg_price),
+<a id="__codelineno-4-92" name="__codelineno-4-92" href="#__codelineno-4-92"></a><span class="w">        </span>qc_avg_price<span class="w"> </span>=<span class="w"> </span>VALUES(qc_avg_price),
+<a id="__codelineno-4-93" name="__codelineno-4-93" href="#__codelineno-4-93"></a><span class="w">        </span>external_min_price_link<span class="w"> </span>=<span class="w"> </span>VALUES(external_min_price_link),
+<a id="__codelineno-4-94" name="__codelineno-4-94" href="#__codelineno-4-94"></a><span class="w">        </span>external_max_price_link<span class="w"> </span>=<span class="w"> </span>VALUES(external_max_price_link),
+<a id="__codelineno-4-95" name="__codelineno-4-95" href="#__codelineno-4-95"></a><span class="w">        </span>external_min_price_source_category<span class="w"> </span>=<span class="w"> </span>VALUES(external_min_price_source_category),
+<a id="__codelineno-4-96" name="__codelineno-4-96" href="#__codelineno-4-96"></a><span class="w">        </span>external_max_price_source_category<span class="w"> </span>=<span class="w"> </span>VALUES(external_max_price_source_category),
+<a id="__codelineno-4-97" name="__codelineno-4-97" href="#__codelineno-4-97"></a><span class="w">        </span>external_avg_price<span class="w"> </span>=<span class="w"> </span>VALUES(external_avg_price),
+<a id="__codelineno-4-98" name="__codelineno-4-98" href="#__codelineno-4-98"></a><span class="w">        </span>catalog_end_name<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_end_name),
+<a id="__codelineno-4-99" name="__codelineno-4-99" href="#__codelineno-4-99"></a><span class="w">        </span>goods_measure_unit<span class="w"> </span>=<span class="w"> </span>VALUES(goods_measure_unit),
+<a id="__codelineno-4-100" name="__codelineno-4-100" href="#__codelineno-4-100"></a><span class="w">        </span>goods_measure_count<span class="w"> </span>=<span class="w"> </span>VALUES(goods_measure_count),
+<a id="__codelineno-4-101" name="__codelineno-4-101" href="#__codelineno-4-101"></a><span class="w">        </span>supplier_comment<span class="w"> </span>=<span class="w"> </span>VALUES(supplier_comment),
+<a id="__codelineno-4-102" name="__codelineno-4-102" href="#__codelineno-4-102"></a><span class="w">        </span>supplier_type<span class="w"> </span>=<span class="w"> </span>VALUES(supplier_type),
+<a id="__codelineno-4-103" name="__codelineno-4-103" href="#__codelineno-4-103"></a><span class="w">        </span>is_discount<span class="w"> </span>=<span class="w"> </span>VALUES(is_discount),
+<a id="__codelineno-4-104" name="__codelineno-4-104" href="#__codelineno-4-104"></a><span class="w">        </span>recommended_catalog<span class="w"> </span>=<span class="w"> </span>VALUES(recommended_catalog),
+<a id="__codelineno-4-105" name="__codelineno-4-105" href="#__codelineno-4-105"></a><span class="w">        </span>calculate_process_description<span class="w"> </span>=<span class="w"> </span>VALUES(calculate_process_description)
+<a id="__codelineno-4-106" name="__codelineno-4-106" href="#__codelineno-4-106"></a><span class="nt">&lt;/insert&gt;</span>
+</code></pre></div>
+<details class="note">
+<summary>His 表复合主键说明</summary>
+<p>His 表主键为 <code>(id, task_create_tenant_id)</code>，唯一键为 <code>(task_create_tenant_id, operate_task_id, source_code, goods_id)</code>。<code>INSERT ... ON DUPLICATE KEY UPDATE</code> 依据唯一键判断冲突，冲突时按 VALUES 更新所有字段，语义完全正确。</p>
+</details>
+<h4 id="412-goodsmergeallmapperxml">4.1.2 修改 <code>GoodsMergeAllMapper.xml</code><a class="headerlink" href="#412-goodsmergeallmapperxml" title="Permanent link">&para;</a></h4>
+<p>同样改为 <code>INSERT ... ON DUPLICATE KEY UPDATE</code>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cm">&lt;!-- GoodsMergeAllMapper.xml:482 — 改为 INSERT ... ON DUPLICATE KEY UPDATE --&gt;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">&lt;insert</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;saveOrUpdateBatchData&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span>INSERT<span class="w"> </span>INTO<span class="w"> </span>t_goods_merge_all<span class="w"> </span>(
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">        </span>id,<span class="w"> </span>goods_code,<span class="w"> </span>reasonable_price,<span class="w"> </span>min_price,<span class="w"> </span>max_price,
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span>update_time,<span class="w"> </span>create_time,<span class="w"> </span>tenant_task_id,<span class="w"> </span>monitoring_time,<span class="w"> </span>task_finish_time,
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span>source_code,<span class="w"> </span>goods_id,<span class="w"> </span>goods_name,<span class="w"> </span>price,<span class="w"> </span>brand_name,<span class="w"> </span>catalog_name,
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span>link,<span class="w"> </span>supplier_name,<span class="w"> </span>praise_rate,<span class="w"> </span>sales_volume,<span class="w"> </span>task_create_tenant_id,
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">        </span>source_name,<span class="w"> </span>sku,<span class="w"> </span>same_measure_code,<span class="w"> </span>operate_task_id,<span class="w"> </span>source_category,
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">        </span>tenant_id,<span class="w"> </span>market_counts,<span class="w"> </span>goverment_counts,<span class="w"> </span>enterprise_counts,
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">        </span>contain_sensitive_word,<span class="w"> </span>exclusive,<span class="w"> </span>useless,<span class="w"> </span>error_catalog,<span class="w"> </span>invalid,
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">        </span>goods_errors,<span class="w"> </span>sensitive_msg,<span class="w"> </span>goods_import_time,<span class="w"> </span>transfer_state,
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">        </span>catalog_one,<span class="w"> </span>catalog_two,<span class="w"> </span>catalog_three,<span class="w"> </span>catalog_four,<span class="w"> </span>catalog_five,
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">        </span>catalog_six,<span class="w"> </span>measure_unit,<span class="w"> </span>bar_image_list,<span class="w"> </span>inside_goods_count,
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">        </span>outside_goods_count,<span class="w"> </span>goods_detail,<span class="w"> </span>generate_msg,<span class="w"> </span>original_price,
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">        </span>zc_avg_price,<span class="w"> </span>qc_avg_price,<span class="w"> </span>external_min_price_link,<span class="w"> </span>external_max_price_link,
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">        </span>external_min_price_source_category,<span class="w"> </span>external_max_price_source_category,
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">        </span>external_avg_price,<span class="w"> </span>catalog_end_name,<span class="w"> </span>goods_measure_unit,<span class="w"> </span>goods_measure_count,
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">        </span>supplier_comment,<span class="w"> </span>supplier_type,<span class="w"> </span>is_discount,<span class="w"> </span>recommended_catalog
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">    </span>)<span class="w"> </span>VALUES
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">    </span><span class="nt">&lt;foreach</span><span class="w"> </span><span class="na">collection=</span><span class="s">&quot;goodsMergeAllList&quot;</span><span class="w"> </span><span class="na">item=</span><span class="s">&quot;item&quot;</span><span class="w"> </span><span class="na">separator=</span><span class="s">&quot;,&quot;</span><span class="nt">&gt;</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">        </span>(#{item.id},<span class="w"> </span>#{item.goodsCode},<span class="w"> </span>#{item.reasonablePrice},<span class="w"> </span>#{item.minPrice},
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">         </span>#{item.maxPrice},<span class="w"> </span>#{item.updateTime},<span class="w"> </span>#{item.createTime},<span class="w"> </span>#{item.tenantTaskId},
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">         </span>#{item.monitoringTime},<span class="w"> </span>#{item.taskFinishTime},<span class="w"> </span>#{item.sourceCode},<span class="w"> </span>#{item.goodsId},
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">         </span>#{item.goodsName},<span class="w"> </span>#{item.price},<span class="w"> </span>#{item.brandName},<span class="w"> </span>#{item.catalogName},
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">         </span>#{item.link},<span class="w"> </span>#{item.supplierName},<span class="w"> </span>#{item.praiseRate},<span class="w"> </span>#{item.salesVolume},
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">         </span>#{item.taskCreateTenantId},<span class="w"> </span>#{item.sourceName},<span class="w"> </span>#{item.sku},<span class="w"> </span>#{item.sameMeasureCode},
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="w">         </span>#{item.operateTaskId},<span class="w"> </span>#{item.sourceCategory},<span class="w"> </span>#{item.tenantId},<span class="w"> </span>#{item.marketCounts},
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a><span class="w">         </span>#{item.govermentCounts},<span class="w"> </span>#{item.enterpriseCounts},<span class="w"> </span>#{item.containSensitiveWord},
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="w">         </span>#{item.exclusive},<span class="w"> </span>#{item.useless},<span class="w"> </span>#{item.errorCatalog},<span class="w"> </span>#{item.invalid},
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="w">         </span>#{item.goodsErrors},<span class="w"> </span>#{item.sensitiveMsg},<span class="w"> </span>#{item.goodsImportTime},
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="w">         </span>#{item.transferState},<span class="w"> </span>#{item.catalogOne},<span class="w"> </span>#{item.catalogTwo},<span class="w"> </span>#{item.catalogThree},
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="w">         </span>#{item.catalogFour},<span class="w"> </span>#{item.catalogFive},<span class="w"> </span>#{item.catalogSix},<span class="w"> </span>#{item.measureUnit},
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="w">         </span>#{item.barImageList},<span class="w"> </span>#{item.insideGoodsCount},<span class="w"> </span>#{item.outsideGoodsCount},
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="w">         </span>#{item.goodsDetail},<span class="w"> </span>#{item.generateMsg},<span class="w"> </span>#{item.originalPrice},<span class="w"> </span>#{item.zcAvgPrice},
+<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a><span class="w">         </span>#{item.qcAvgPrice},<span class="w"> </span>#{item.externalMinPriceLink},<span class="w"> </span>#{item.externalMaxPriceLink},
+<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="w">         </span>#{item.externalMinPriceSourceCategory},<span class="w"> </span>#{item.externalMaxPriceSourceCategory},
+<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="w">         </span>#{item.externalAvgPrice},<span class="w"> </span>#{item.catalogEndName},<span class="w"> </span>#{item.goodsMeasureUnit},
+<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a><span class="w">         </span>#{item.goodsMeasureCount},<span class="w"> </span>#{item.supplierComment},<span class="w"> </span>#{item.supplierType},
+<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a><span class="w">         </span>#{item.isDiscount},<span class="w"> </span>#{item.recommendedCatalog})
+<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a><span class="w">    </span><span class="nt">&lt;/foreach&gt;</span>
+<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a><span class="w">    </span>ON<span class="w"> </span>DUPLICATE<span class="w"> </span>KEY<span class="w"> </span>UPDATE
+<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a><span class="w">        </span>goods_code<span class="w"> </span>=<span class="w"> </span>VALUES(goods_code),
+<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a><span class="w">        </span>reasonable_price<span class="w"> </span>=<span class="w"> </span>VALUES(reasonable_price),
+<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a><span class="w">        </span>min_price<span class="w"> </span>=<span class="w"> </span>VALUES(min_price),
+<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a><span class="w">        </span>max_price<span class="w"> </span>=<span class="w"> </span>VALUES(max_price),
+<a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a><span class="w">        </span>update_time<span class="w"> </span>=<span class="w"> </span>VALUES(update_time),
+<a id="__codelineno-5-48" name="__codelineno-5-48" href="#__codelineno-5-48"></a><span class="w">        </span>monitoring_time<span class="w"> </span>=<span class="w"> </span>VALUES(monitoring_time),
+<a id="__codelineno-5-49" name="__codelineno-5-49" href="#__codelineno-5-49"></a><span class="w">        </span>task_finish_time<span class="w"> </span>=<span class="w"> </span>VALUES(task_finish_time),
+<a id="__codelineno-5-50" name="__codelineno-5-50" href="#__codelineno-5-50"></a><span class="w">        </span>goods_name<span class="w"> </span>=<span class="w"> </span>VALUES(goods_name),
+<a id="__codelineno-5-51" name="__codelineno-5-51" href="#__codelineno-5-51"></a><span class="w">        </span>price<span class="w"> </span>=<span class="w"> </span>VALUES(price),
+<a id="__codelineno-5-52" name="__codelineno-5-52" href="#__codelineno-5-52"></a><span class="w">        </span>brand_name<span class="w"> </span>=<span class="w"> </span>VALUES(brand_name),
+<a id="__codelineno-5-53" name="__codelineno-5-53" href="#__codelineno-5-53"></a><span class="w">        </span>catalog_name<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_name),
+<a id="__codelineno-5-54" name="__codelineno-5-54" href="#__codelineno-5-54"></a><span class="w">        </span>link<span class="w"> </span>=<span class="w"> </span>VALUES(link),
+<a id="__codelineno-5-55" name="__codelineno-5-55" href="#__codelineno-5-55"></a><span class="w">        </span>supplier_name<span class="w"> </span>=<span class="w"> </span>VALUES(supplier_name),
+<a id="__codelineno-5-56" name="__codelineno-5-56" href="#__codelineno-5-56"></a><span class="w">        </span>praise_rate<span class="w"> </span>=<span class="w"> </span>VALUES(praise_rate),
+<a id="__codelineno-5-57" name="__codelineno-5-57" href="#__codelineno-5-57"></a><span class="w">        </span>sales_volume<span class="w"> </span>=<span class="w"> </span>VALUES(sales_volume),
+<a id="__codelineno-5-58" name="__codelineno-5-58" href="#__codelineno-5-58"></a><span class="w">        </span>source_name<span class="w"> </span>=<span class="w"> </span>VALUES(source_name),
+<a id="__codelineno-5-59" name="__codelineno-5-59" href="#__codelineno-5-59"></a><span class="w">        </span>sku<span class="w"> </span>=<span class="w"> </span>VALUES(sku),
+<a id="__codelineno-5-60" name="__codelineno-5-60" href="#__codelineno-5-60"></a><span class="w">        </span>same_measure_code<span class="w"> </span>=<span class="w"> </span>VALUES(same_measure_code),
+<a id="__codelineno-5-61" name="__codelineno-5-61" href="#__codelineno-5-61"></a><span class="w">        </span>source_category<span class="w"> </span>=<span class="w"> </span>VALUES(source_category),
+<a id="__codelineno-5-62" name="__codelineno-5-62" href="#__codelineno-5-62"></a><span class="w">        </span>market_counts<span class="w"> </span>=<span class="w"> </span>VALUES(market_counts),
+<a id="__codelineno-5-63" name="__codelineno-5-63" href="#__codelineno-5-63"></a><span class="w">        </span>goverment_counts<span class="w"> </span>=<span class="w"> </span>VALUES(goverment_counts),
+<a id="__codelineno-5-64" name="__codelineno-5-64" href="#__codelineno-5-64"></a><span class="w">        </span>enterprise_counts<span class="w"> </span>=<span class="w"> </span>VALUES(enterprise_counts),
+<a id="__codelineno-5-65" name="__codelineno-5-65" href="#__codelineno-5-65"></a><span class="w">        </span>contain_sensitive_word<span class="w"> </span>=<span class="w"> </span>VALUES(contain_sensitive_word),
+<a id="__codelineno-5-66" name="__codelineno-5-66" href="#__codelineno-5-66"></a><span class="w">        </span>exclusive<span class="w"> </span>=<span class="w"> </span>VALUES(exclusive),
+<a id="__codelineno-5-67" name="__codelineno-5-67" href="#__codelineno-5-67"></a><span class="w">        </span>useless<span class="w"> </span>=<span class="w"> </span>VALUES(useless),
+<a id="__codelineno-5-68" name="__codelineno-5-68" href="#__codelineno-5-68"></a><span class="w">        </span>error_catalog<span class="w"> </span>=<span class="w"> </span>VALUES(error_catalog),
+<a id="__codelineno-5-69" name="__codelineno-5-69" href="#__codelineno-5-69"></a><span class="w">        </span>invalid<span class="w"> </span>=<span class="w"> </span>VALUES(invalid),
+<a id="__codelineno-5-70" name="__codelineno-5-70" href="#__codelineno-5-70"></a><span class="w">        </span>goods_errors<span class="w"> </span>=<span class="w"> </span>VALUES(goods_errors),
+<a id="__codelineno-5-71" name="__codelineno-5-71" href="#__codelineno-5-71"></a><span class="w">        </span>sensitive_msg<span class="w"> </span>=<span class="w"> </span>VALUES(sensitive_msg),
+<a id="__codelineno-5-72" name="__codelineno-5-72" href="#__codelineno-5-72"></a><span class="w">        </span>goods_import_time<span class="w"> </span>=<span class="w"> </span>VALUES(goods_import_time),
+<a id="__codelineno-5-73" name="__codelineno-5-73" href="#__codelineno-5-73"></a><span class="w">        </span>transfer_state<span class="w"> </span>=<span class="w"> </span>VALUES(transfer_state),
+<a id="__codelineno-5-74" name="__codelineno-5-74" href="#__codelineno-5-74"></a><span class="w">        </span>catalog_one<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_one),
+<a id="__codelineno-5-75" name="__codelineno-5-75" href="#__codelineno-5-75"></a><span class="w">        </span>catalog_two<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_two),
+<a id="__codelineno-5-76" name="__codelineno-5-76" href="#__codelineno-5-76"></a><span class="w">        </span>catalog_three<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_three),
+<a id="__codelineno-5-77" name="__codelineno-5-77" href="#__codelineno-5-77"></a><span class="w">        </span>catalog_four<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_four),
+<a id="__codelineno-5-78" name="__codelineno-5-78" href="#__codelineno-5-78"></a><span class="w">        </span>catalog_five<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_five),
+<a id="__codelineno-5-79" name="__codelineno-5-79" href="#__codelineno-5-79"></a><span class="w">        </span>catalog_six<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_six),
+<a id="__codelineno-5-80" name="__codelineno-5-80" href="#__codelineno-5-80"></a><span class="w">        </span>measure_unit<span class="w"> </span>=<span class="w"> </span>VALUES(measure_unit),
+<a id="__codelineno-5-81" name="__codelineno-5-81" href="#__codelineno-5-81"></a><span class="w">        </span>bar_image_list<span class="w"> </span>=<span class="w"> </span>VALUES(bar_image_list),
+<a id="__codelineno-5-82" name="__codelineno-5-82" href="#__codelineno-5-82"></a><span class="w">        </span>inside_goods_count<span class="w"> </span>=<span class="w"> </span>VALUES(inside_goods_count),
+<a id="__codelineno-5-83" name="__codelineno-5-83" href="#__codelineno-5-83"></a><span class="w">        </span>outside_goods_count<span class="w"> </span>=<span class="w"> </span>VALUES(outside_goods_count),
+<a id="__codelineno-5-84" name="__codelineno-5-84" href="#__codelineno-5-84"></a><span class="w">        </span>goods_detail<span class="w"> </span>=<span class="w"> </span>VALUES(goods_detail),
+<a id="__codelineno-5-85" name="__codelineno-5-85" href="#__codelineno-5-85"></a><span class="w">        </span>generate_msg<span class="w"> </span>=<span class="w"> </span>VALUES(generate_msg),
+<a id="__codelineno-5-86" name="__codelineno-5-86" href="#__codelineno-5-86"></a><span class="w">        </span>original_price<span class="w"> </span>=<span class="w"> </span>VALUES(original_price),
+<a id="__codelineno-5-87" name="__codelineno-5-87" href="#__codelineno-5-87"></a><span class="w">        </span>zc_avg_price<span class="w"> </span>=<span class="w"> </span>VALUES(zc_avg_price),
+<a id="__codelineno-5-88" name="__codelineno-5-88" href="#__codelineno-5-88"></a><span class="w">        </span>qc_avg_price<span class="w"> </span>=<span class="w"> </span>VALUES(qc_avg_price),
+<a id="__codelineno-5-89" name="__codelineno-5-89" href="#__codelineno-5-89"></a><span class="w">        </span>external_min_price_link<span class="w"> </span>=<span class="w"> </span>VALUES(external_min_price_link),
+<a id="__codelineno-5-90" name="__codelineno-5-90" href="#__codelineno-5-90"></a><span class="w">        </span>external_max_price_link<span class="w"> </span>=<span class="w"> </span>VALUES(external_max_price_link),
+<a id="__codelineno-5-91" name="__codelineno-5-91" href="#__codelineno-5-91"></a><span class="w">        </span>external_min_price_source_category<span class="w"> </span>=<span class="w"> </span>VALUES(external_min_price_source_category),
+<a id="__codelineno-5-92" name="__codelineno-5-92" href="#__codelineno-5-92"></a><span class="w">        </span>external_max_price_source_category<span class="w"> </span>=<span class="w"> </span>VALUES(external_max_price_source_category),
+<a id="__codelineno-5-93" name="__codelineno-5-93" href="#__codelineno-5-93"></a><span class="w">        </span>external_avg_price<span class="w"> </span>=<span class="w"> </span>VALUES(external_avg_price),
+<a id="__codelineno-5-94" name="__codelineno-5-94" href="#__codelineno-5-94"></a><span class="w">        </span>catalog_end_name<span class="w"> </span>=<span class="w"> </span>VALUES(catalog_end_name),
+<a id="__codelineno-5-95" name="__codelineno-5-95" href="#__codelineno-5-95"></a><span class="w">        </span>goods_measure_unit<span class="w"> </span>=<span class="w"> </span>VALUES(goods_measure_unit),
+<a id="__codelineno-5-96" name="__codelineno-5-96" href="#__codelineno-5-96"></a><span class="w">        </span>goods_measure_count<span class="w"> </span>=<span class="w"> </span>VALUES(goods_measure_count),
+<a id="__codelineno-5-97" name="__codelineno-5-97" href="#__codelineno-5-97"></a><span class="w">        </span>supplier_comment<span class="w"> </span>=<span class="w"> </span>VALUES(supplier_comment),
+<a id="__codelineno-5-98" name="__codelineno-5-98" href="#__codelineno-5-98"></a><span class="w">        </span>supplier_type<span class="w"> </span>=<span class="w"> </span>VALUES(supplier_type),
+<a id="__codelineno-5-99" name="__codelineno-5-99" href="#__codelineno-5-99"></a><span class="w">        </span>is_discount<span class="w"> </span>=<span class="w"> </span>VALUES(is_discount),
+<a id="__codelineno-5-100" name="__codelineno-5-100" href="#__codelineno-5-100"></a><span class="w">        </span>recommended_catalog<span class="w"> </span>=<span class="w"> </span>VALUES(recommended_catalog)
+<a id="__codelineno-5-101" name="__codelineno-5-101" href="#__codelineno-5-101"></a><span class="nt">&lt;/insert&gt;</span>
+</code></pre></div>
+<h4 id="413-goodsmergehisserviceimpl-goodsmergeallserviceimpl">4.1.3 修改 <code>GoodsMergeHisServiceImpl</code> 和 <code>GoodsMergeAllServiceImpl</code><a class="headerlink" href="#413-goodsmergehisserviceimpl-goodsmergeallserviceimpl" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">// GoodsMergeHisServiceImpl.java:232 — 改为调用 Mapper</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nd">@Override</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">saveOrUpdateBatchData</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">GoodsMergeHisDO</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goodsMergeHisList</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">CollectionUtil</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">(</span><span class="n">goodsMergeHisList</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="c1">// ✅ 直接调用 Mapper 的 INSERT ... ON DUPLICATE KEY UPDATE，一条SQL搞定100行</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="n">goodsMergeHisMapper</span><span class="p">.</span><span class="na">saveOrUpdateBatchData</span><span class="p">(</span><span class="n">goodsMergeHisList</span><span class="p">);</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="c1">// ✅ ON DUPLICATE KEY UPDATE 等效于覆盖写入，Expend 统一用 saveBatch</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="n">saveOrUpdateHisExpend</span><span class="p">(</span><span class="n">goodsMergeHisList</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// GoodsMergeAllServiceImpl.java:150 — 改为调用 Mapper</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nd">@Override</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">saveOrUpdateBatchData</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">GoodsMergeAllDO</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goodsMergeAllList</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">CollectionUtil</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">(</span><span class="n">goodsMergeAllList</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="c1">// ✅ 直接调用 Mapper 的 INSERT ... ON DUPLICATE KEY UPDATE，一条SQL搞定100行</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="n">goodsMergeAllMapper</span><span class="p">.</span><span class="na">saveOrUpdateBatchData</span><span class="p">(</span><span class="n">goodsMergeAllList</span><span class="p">);</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="414">4.1.4 验证清单<a class="headerlink" href="#414" title="Permanent link">&para;</a></h4>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> His/All XML 的 <code>id="saveOrUpdateBatchData"</code> 从 <code>&lt;update&gt;</code> 改为 <code>&lt;insert&gt;</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> His/All XML 中所有 DO 字段与数据库列名一一对应，无遗漏</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> His XML 包含 <code>task_create_tenant_id</code>（复合主键的一部分）</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> ServiceImpl 确认已注入 <code>GoodsMergeHisMapper</code> / <code>GoodsMergeAllMapper</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 上线后对比耗时日志中 <code>写His</code> 和 <code>写All</code> 的耗时变化</li>
+</ul>
+<hr />
+<h3 id="2expend">方案2（高价值）：Expend 表异步化<a class="headerlink" href="#2expend" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">预期效果</p>
+<p>消除 Expend 表的行锁竞争，整体耗时再降 5~8 秒</p>
+</div>
+<p><strong>方案 A（推荐）</strong>：确认 Expend/ExpendTwo 是否为 His 的纯副本。若是，可考虑在 His 表中增加 JSON 字段合并存储，减少独立表写入。</p>
+<p><strong>方案 B</strong>：Expend 写入改为 <code>@Async</code> 异步方法，不阻塞主链路：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nd">@Async</span><span class="p">(</span><span class="s">&quot;taskExecutor&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">asyncSaveOrUpdateHisExpend</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">GoodsMergeHisDO</span><span class="o">&gt;</span><span class="w"> </span><span class="n">list</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="n">saveOrUpdateHisExpend</span><span class="p">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">}</span>
+</code></pre></div>
+<details class="warning">
+<summary>风险评估</summary>
+<p>异步写入 Expend 后，若 His 写入成功但 Expend 写入失败，数据将不一致。建议先与业务方确认 Expend 表的用途（是否是 His 表的纯副本），再决定是否异步化。</p>
+</details>
+<hr />
+<h3 id="3feign-mq">方案3（高价值）：Feign 调用抽取为 MQ 异步消费<a class="headerlink" href="#3feign-mq" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">预期效果</p>
+<p>消除 <code>transTDMsgDetails</code>（1.5~3.7秒）+ <code>algorithmDetail</code>（~80ms）+ <code>changeDealState</code> 的阻塞，主链路只负责写 His/All，整体耗时再降 <strong>3~5 秒</strong></p>
+</div>
+<p><strong>现状链路中的 3 处 Feign 调用</strong>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Feign 调用</th>
+<th style="text-align: left;">代码位置</th>
+<th style="text-align: left;">触发条件</th>
+<th style="text-align: center;">耗时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>operateFeginService.changeDealState</code></td>
+<td style="text-align: left;"><code>saveGoodsMergeInfo:211</code></td>
+<td style="text-align: left;"><code>isRecheckTask</code> 或 <code>isCallbackDataDirectlyOperation</code></td>
+<td style="text-align: center;">未知</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>operateFeginService.algorithmDetail</code></td>
+<td style="text-align: left;"><code>saveHisAndAllRecord:323</code></td>
+<td style="text-align: left;">非私有化租户 且 <code>isGenerateMsg=true</code></td>
+<td style="text-align: center;">~80ms</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>operateFeginService.transTDMsgDetails</code></td>
+<td style="text-align: left;"><code>saveHisAndAllRecord:354</code></td>
+<td style="text-align: left;">非私有化租户 且 <code>isGenerateMsg=true</code> 且有消息</td>
+<td style="text-align: center;">1.5~3.7秒</td>
+</tr>
+</tbody>
+</table>
+<p><strong>优化方案</strong>：将 Feign 调用合并为一个 MQ 消息，写 His/All 完成后立即发送，MQ 消费者异步执行后续 Feign 逻辑。</p>
+<h4 id="431-mq">4.3.1 新增 MQ 消息体<a class="headerlink" href="#431-mq" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nd">@Data</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nd">@Builder</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GoodsMergeMsgNotifyDTO</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Serializable</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">serialVersionUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1L</span><span class="p">;</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="cm">/** 运营端任务ID */</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">operateTaskId</span><span class="p">;</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="cm">/** 发起任务租户ID */</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">taskCreateTenantId</span><span class="p">;</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="cm">/** 租户ID */</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">tenantId</span><span class="p">;</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">    </span><span class="cm">/** 租户类型 */</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">tenantType</span><span class="p">;</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">    </span><span class="cm">/** 任务类型 */</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">taskType</span><span class="p">;</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">    </span><span class="cm">/** 是否需要生成消息 */</span>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Boolean</span><span class="w"> </span><span class="n">isGenerateMsg</span><span class="p">;</span>
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">    </span><span class="cm">/** 算法ID（仅非私有化租户） */</span>
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">priceAlgorithmId</span><span class="p">;</span>
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="w">    </span><span class="cm">/** 商品数据（用于生成消息详情） */</span>
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">GoodsMergeHisDO</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goodsMergeHisDOS</span><span class="p">;</span>
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a><span class="w">    </span><span class="cm">/** 消息详情列表（已在主链路生成好） */</span>
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">TDMsgDetailResqDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tdMsgDetailResqDTOS</span><span class="p">;</span>
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="w">    </span><span class="cm">/** 是否需要更新异常商品状态（isRecheckTask 或 isCallbackDataDirectlyOperation） */</span>
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Boolean</span><span class="w"> </span><span class="n">needUpdateDealState</span><span class="p">;</span>
+<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a><span class="w">    </span><span class="cm">/** 回调任务的原始任务ID（isCallbackDataDirectlyOperation 时有值） */</span>
+<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">originTaskId</span><span class="p">;</span>
+<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a><span class="w">    </span><span class="cm">/** 复检任务ID（isRecheckTask 时有值） */</span>
+<a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">recalcTaskId</span><span class="p">;</span>
+<a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="w">    </span><span class="cm">/** 商品ID列表（用于更新异常商品状态） */</span>
+<a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goodsIds</span><span class="p">;</span>
+<a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a><span class="w">    </span><span class="cm">/** 租户源编码（用于更新异常商品状态） */</span>
+<a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">tenantSourceCode</span><span class="p">;</span>
+<a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="432">4.3.2 主链路修改<a class="headerlink" href="#432" title="Permanent link">&para;</a></h4>
+<p><strong><code>saveGoodsMergeInfo</code> 和 <code>saveHisAndAllRecord</code> 中</strong>，在 His/All 写入完成后，发送 MQ 消息，原 Feign 调用全部移除：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1">// ========== saveHisAndAllRecord 末尾修改 ==========</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1">// ❌ 原有逻辑（删除）</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1">// operateFeginService.transTDMsgDetails(tdMsgDetailBodyResq);</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="c1">// ✅ 改为发送 MQ 消息（异步处理）</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="s">&quot;private&quot;</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">sysTenantDTO</span><span class="p">.</span><span class="na">getTenantType</span><span class="p">())</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">isGenerateMsg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="n">GoodsMergeMsgNotifyDTO</span><span class="w"> </span><span class="n">notifyDTO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GoodsMergeMsgNotifyDTO</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">            </span><span class="p">.</span><span class="na">operateTaskId</span><span class="p">(</span><span class="n">monitorTask</span><span class="p">.</span><span class="na">getId</span><span class="p">())</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">            </span><span class="p">.</span><span class="na">taskCreateTenantId</span><span class="p">(</span><span class="n">goodsMergeInfoDTO</span><span class="p">.</span><span class="na">getTaskCreateTenantId</span><span class="p">())</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">            </span><span class="p">.</span><span class="na">tenantId</span><span class="p">(</span><span class="n">sysTenantDTO</span><span class="p">.</span><span class="na">getTenantId</span><span class="p">())</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">            </span><span class="p">.</span><span class="na">tenantType</span><span class="p">(</span><span class="n">sysTenantDTO</span><span class="p">.</span><span class="na">getTenantType</span><span class="p">())</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">            </span><span class="p">.</span><span class="na">taskType</span><span class="p">(</span><span class="n">monitorTask</span><span class="p">.</span><span class="na">getTaskType</span><span class="p">())</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="w">            </span><span class="p">.</span><span class="na">isGenerateMsg</span><span class="p">(</span><span class="n">isGenerateMsg</span><span class="p">)</span>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">            </span><span class="p">.</span><span class="na">priceAlgorithmId</span><span class="p">(</span><span class="n">monitorTask</span><span class="p">.</span><span class="na">getPriceAlgorithmId</span><span class="p">())</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">            </span><span class="p">.</span><span class="na">goodsMergeHisDOS</span><span class="p">(</span><span class="n">goodsMergeHisDOS</span><span class="p">)</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">            </span><span class="p">.</span><span class="na">tdMsgDetailResqDTOS</span><span class="p">(</span><span class="n">tdMsgDetailResqDTOS</span><span class="p">)</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="w">            </span><span class="p">.</span><span class="na">needUpdateDealState</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="w">    </span><span class="n">rabbitTemplate</span><span class="p">.</span><span class="na">convertAndSend</span><span class="p">(</span>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">            </span><span class="s">&quot;goods.merge.notify.exchange&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1">// 交换机名</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="w">            </span><span class="s">&quot;goods.merge.notify&quot;</span><span class="p">,</span><span class="w">           </span><span class="c1">// routing key</span>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">            </span><span class="n">notifyDTO</span>
+<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="p">}</span>
+<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a>
+<a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="c1">// ========== saveGoodsMergeInfo 末尾修改 ==========</span>
+<a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a>
+<a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a><span class="c1">// ❌ 原有逻辑（删除）</span>
+<a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a><span class="c1">// operateFeginService.changeDealState(request);</span>
+<a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a>
+<a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a><span class="c1">// ✅ 改为发送 MQ 消息（异步处理）</span>
+<a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isRecheckTask</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">isCallbackDataDirectlyOperation</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">CollectionUtil</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">(</span><span class="n">goodsMergeInfoDTO</span><span class="p">.</span><span class="na">getData</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a><span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goodsIds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">goodsMergeInfoDTO</span><span class="p">.</span><span class="na">getData</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a><span class="w">                </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">item</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">goodsMergeInfoDTO</span><span class="p">.</span><span class="na">getTaskCreateTenantId</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getGoodsTenantId</span><span class="p">()))</span>
+<a id="__codelineno-10-37" name="__codelineno-10-37" href="#__codelineno-10-37"></a><span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">GoodsMergeInfoDetailReqDTO</span><span class="p">::</span><span class="n">getGoodsId</span><span class="p">)</span>
+<a id="__codelineno-10-38" name="__codelineno-10-38" href="#__codelineno-10-38"></a><span class="w">                </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">());</span>
+<a id="__codelineno-10-39" name="__codelineno-10-39" href="#__codelineno-10-39"></a>
+<a id="__codelineno-10-40" name="__codelineno-10-40" href="#__codelineno-10-40"></a><span class="w">        </span><span class="n">GoodsMergeMsgNotifyDTO</span><span class="w"> </span><span class="n">notifyDTO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GoodsMergeMsgNotifyDTO</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<a id="__codelineno-10-41" name="__codelineno-10-41" href="#__codelineno-10-41"></a><span class="w">                </span><span class="p">.</span><span class="na">needUpdateDealState</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<a id="__codelineno-10-42" name="__codelineno-10-42" href="#__codelineno-10-42"></a><span class="w">                </span><span class="p">.</span><span class="na">goodsIds</span><span class="p">(</span><span class="n">goodsIds</span><span class="p">)</span>
+<a id="__codelineno-10-43" name="__codelineno-10-43" href="#__codelineno-10-43"></a><span class="w">                </span><span class="p">.</span><span class="na">tenantSourceCode</span><span class="p">(</span><span class="n">goodsMergeInfoDTO</span><span class="p">.</span><span class="na">getTenantSourceCode</span><span class="p">())</span>
+<a id="__codelineno-10-44" name="__codelineno-10-44" href="#__codelineno-10-44"></a><span class="w">                </span><span class="p">.</span><span class="na">originTaskId</span><span class="p">(</span><span class="n">isCallbackDataDirectlyOperation</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">goodsMergeInfoDTO</span><span class="p">.</span><span class="na">getOperateTaskId</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span>
+<a id="__codelineno-10-45" name="__codelineno-10-45" href="#__codelineno-10-45"></a><span class="w">                </span><span class="p">.</span><span class="na">recalcTaskId</span><span class="p">(</span><span class="n">isRecheckTask</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">goodsMergeInfoDTO</span><span class="p">.</span><span class="na">getOperateTaskId</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span>
+<a id="__codelineno-10-46" name="__codelineno-10-46" href="#__codelineno-10-46"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-10-47" name="__codelineno-10-47" href="#__codelineno-10-47"></a>
+<a id="__codelineno-10-48" name="__codelineno-10-48" href="#__codelineno-10-48"></a><span class="w">        </span><span class="n">rabbitTemplate</span><span class="p">.</span><span class="na">convertAndSend</span><span class="p">(</span>
+<a id="__codelineno-10-49" name="__codelineno-10-49" href="#__codelineno-10-49"></a><span class="w">                </span><span class="s">&quot;goods.merge.notify.exchange&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-50" name="__codelineno-10-50" href="#__codelineno-10-50"></a><span class="w">                </span><span class="s">&quot;goods.merge.notify&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-51" name="__codelineno-10-51" href="#__codelineno-10-51"></a><span class="w">                </span><span class="n">notifyDTO</span>
+<a id="__codelineno-10-52" name="__codelineno-10-52" href="#__codelineno-10-52"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-10-53" name="__codelineno-10-53" href="#__codelineno-10-53"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-10-54" name="__codelineno-10-54" href="#__codelineno-10-54"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="433-mq">4.3.3 新增 MQ 消费者<a class="headerlink" href="#433-mq" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nd">@Slf4j</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nd">@Component</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GoodsMergeMsgNotifyConsumer</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="nd">@Autowired</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">OperateFeginService</span><span class="w"> </span><span class="n">operateFeginService</span><span class="p">;</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="nd">@RabbitListener</span><span class="p">(</span><span class="n">queues</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;goods.merge.notify.queue&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handleGoodsMergeMsgNotify</span><span class="p">(</span><span class="n">GoodsMergeMsgNotifyDTO</span><span class="w"> </span><span class="n">notifyDTO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;收到商品合并消息通知, operateTaskId={}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getOperateTaskId</span><span class="p">());</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">            </span><span class="c1">// 处理异常商品状态更新</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Boolean</span><span class="p">.</span><span class="na">TRUE</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getNeedUpdateDealState</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">                </span><span class="n">ChangeDealStateRequest</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ChangeDealStateRequest</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">                        </span><span class="p">.</span><span class="na">goodsIds</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getGoodsIds</span><span class="p">())</span>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">                        </span><span class="p">.</span><span class="na">dealState</span><span class="p">(</span><span class="n">DealStateEnum</span><span class="p">.</span><span class="na">FINISH</span><span class="p">.</span><span class="na">getCode</span><span class="p">())</span>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">                        </span><span class="p">.</span><span class="na">tenantSourceCode</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getTenantSourceCode</span><span class="p">())</span>
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">                        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">StrUtil</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getOriginTaskId</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">                    </span><span class="n">request</span><span class="p">.</span><span class="na">setOriginTaskId</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getOriginTaskId</span><span class="p">());</span>
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">                </span><span class="p">}</span>
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">StrUtil</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getRecalcTaskId</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a><span class="w">                    </span><span class="n">request</span><span class="p">.</span><span class="na">setRecalcTaskId</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getRecalcTaskId</span><span class="p">());</span>
+<a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a><span class="w">                </span><span class="p">}</span>
+<a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a><span class="w">                </span><span class="n">operateFeginService</span><span class="p">.</span><span class="na">changeDealState</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+<a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a><span class="w">                </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;异常商品状态更新成功, operateTaskId={}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getOperateTaskId</span><span class="p">());</span>
+<a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a>
+<a id="__codelineno-11-30" name="__codelineno-11-30" href="#__codelineno-11-30"></a><span class="w">            </span><span class="c1">// 处理消息生成与传输（非私有化租户）</span>
+<a id="__codelineno-11-31" name="__codelineno-11-31" href="#__codelineno-11-31"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Boolean</span><span class="p">.</span><span class="na">TRUE</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getIsGenerateMsg</span><span class="p">())</span>
+<a id="__codelineno-11-32" name="__codelineno-11-32" href="#__codelineno-11-32"></a><span class="w">                    </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="s">&quot;private&quot;</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getTenantType</span><span class="p">())</span>
+<a id="__codelineno-11-33" name="__codelineno-11-33" href="#__codelineno-11-33"></a><span class="w">                    </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">CollectionUtil</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getTdMsgDetailResqDTOS</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-34" name="__codelineno-11-34" href="#__codelineno-11-34"></a>
+<a id="__codelineno-11-35" name="__codelineno-11-35" href="#__codelineno-11-35"></a><span class="w">                </span><span class="c1">// 1. 获取算法（若未在消息中传递）</span>
+<a id="__codelineno-11-36" name="__codelineno-11-36" href="#__codelineno-11-36"></a><span class="w">                </span><span class="c1">// 若算法在主链路已获取，可直接序列化到消息体中传递，避免重复 RPC</span>
+<a id="__codelineno-11-37" name="__codelineno-11-37" href="#__codelineno-11-37"></a><span class="w">                </span><span class="c1">// 此处假设算法已序列化到 GoodsMergeHisDO 或从缓存获取</span>
+<a id="__codelineno-11-38" name="__codelineno-11-38" href="#__codelineno-11-38"></a><span class="w">                </span><span class="n">AlgorithmDO</span><span class="w"> </span><span class="n">algorithm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<a id="__codelineno-11-39" name="__codelineno-11-39" href="#__codelineno-11-39"></a><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">StrUtil</span><span class="p">.</span><span class="na">isNotEmpty</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getPriceAlgorithmId</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-40" name="__codelineno-11-40" href="#__codelineno-11-40"></a><span class="w">                    </span><span class="n">ResultBody</span><span class="o">&lt;</span><span class="n">AlgorithmDO</span><span class="o">&gt;</span><span class="w"> </span><span class="n">algoResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">operateFeginService</span>
+<a id="__codelineno-11-41" name="__codelineno-11-41" href="#__codelineno-11-41"></a><span class="w">                            </span><span class="p">.</span><span class="na">algorithmDetail</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getPriceAlgorithmId</span><span class="p">());</span>
+<a id="__codelineno-11-42" name="__codelineno-11-42" href="#__codelineno-11-42"></a><span class="w">                    </span><span class="n">algorithm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">algoResult</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">algoResult</span><span class="p">.</span><span class="na">getData</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<a id="__codelineno-11-43" name="__codelineno-11-43" href="#__codelineno-11-43"></a><span class="w">                </span><span class="p">}</span>
+<a id="__codelineno-11-44" name="__codelineno-11-44" href="#__codelineno-11-44"></a>
+<a id="__codelineno-11-45" name="__codelineno-11-45" href="#__codelineno-11-45"></a><span class="w">                </span><span class="c1">// 2. 生成并传输消息详情</span>
+<a id="__codelineno-11-46" name="__codelineno-11-46" href="#__codelineno-11-46"></a><span class="w">                </span><span class="n">TDMsgDetailBodyResq</span><span class="w"> </span><span class="n">tdMsgDetailBodyResq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TDMsgDetailBodyResq</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<a id="__codelineno-11-47" name="__codelineno-11-47" href="#__codelineno-11-47"></a><span class="w">                        </span><span class="p">.</span><span class="na">tenantId</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getTenantId</span><span class="p">())</span>
+<a id="__codelineno-11-48" name="__codelineno-11-48" href="#__codelineno-11-48"></a><span class="w">                        </span><span class="p">.</span><span class="na">taskId</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getOperateTaskId</span><span class="p">())</span>
+<a id="__codelineno-11-49" name="__codelineno-11-49" href="#__codelineno-11-49"></a><span class="w">                        </span><span class="p">.</span><span class="na">datas</span><span class="p">(</span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getTdMsgDetailResqDTOS</span><span class="p">())</span>
+<a id="__codelineno-11-50" name="__codelineno-11-50" href="#__codelineno-11-50"></a><span class="w">                        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-11-51" name="__codelineno-11-51" href="#__codelineno-11-51"></a><span class="w">                </span><span class="n">operateFeginService</span><span class="p">.</span><span class="na">transTDMsgDetails</span><span class="p">(</span><span class="n">tdMsgDetailBodyResq</span><span class="p">);</span>
+<a id="__codelineno-11-52" name="__codelineno-11-52" href="#__codelineno-11-52"></a><span class="w">                </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;消息详情传输成功, operateTaskId={}, 数量={}&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-53" name="__codelineno-11-53" href="#__codelineno-11-53"></a><span class="w">                        </span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getOperateTaskId</span><span class="p">(),</span><span class="w"> </span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getTdMsgDetailResqDTOS</span><span class="p">().</span><span class="na">size</span><span class="p">());</span>
+<a id="__codelineno-11-54" name="__codelineno-11-54" href="#__codelineno-11-54"></a><span class="w">            </span><span class="p">}</span>
+<a id="__codelineno-11-55" name="__codelineno-11-55" href="#__codelineno-11-55"></a><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-56" name="__codelineno-11-56" href="#__codelineno-11-56"></a><span class="w">            </span><span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">&quot;处理商品合并消息通知异常, operateTaskId={}, error={}&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-57" name="__codelineno-11-57" href="#__codelineno-11-57"></a><span class="w">                    </span><span class="n">notifyDTO</span><span class="p">.</span><span class="na">getOperateTaskId</span><span class="p">(),</span><span class="w"> </span><span class="n">ExceptionUtil</span><span class="p">.</span><span class="na">stacktraceToString</span><span class="p">(</span><span class="n">e</span><span class="p">));</span>
+<a id="__codelineno-11-58" name="__codelineno-11-58" href="#__codelineno-11-58"></a><span class="w">            </span><span class="c1">// MQ 消息默认会重试，建议配合死信队列处理最终失败</span>
+<a id="__codelineno-11-59" name="__codelineno-11-59" href="#__codelineno-11-59"></a><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">e</span><span class="p">;</span>
+<a id="__codelineno-11-60" name="__codelineno-11-60" href="#__codelineno-11-60"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-11-61" name="__codelineno-11-61" href="#__codelineno-11-61"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-11-62" name="__codelineno-11-62" href="#__codelineno-11-62"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="434-rabbitmq">4.3.4 RabbitMQ 配置<a class="headerlink" href="#434-rabbitmq" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nd">@Configuration</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GoodsMergeMqConfig</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">EXCHANGE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;goods.merge.notify.exchange&quot;</span><span class="p">;</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">QUEUE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;goods.merge.notify.queue&quot;</span><span class="p">;</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">ROUTING_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;goods.merge.notify&quot;</span><span class="p">;</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="nd">@Bean</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">DirectExchange</span><span class="w"> </span><span class="nf">goodsMergeNotifyExchange</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DirectExchange</span><span class="p">(</span><span class="n">EXCHANGE</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">    </span><span class="nd">@Bean</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Queue</span><span class="w"> </span><span class="nf">goodsMergeNotifyQueue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">QueueBuilder</span><span class="p">.</span><span class="na">durable</span><span class="p">(</span><span class="n">QUEUE</span><span class="p">)</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">                </span><span class="p">.</span><span class="na">withArgument</span><span class="p">(</span><span class="s">&quot;x-dead-letter-exchange&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">EXCHANGE</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;.dlx&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">                </span><span class="p">.</span><span class="na">withArgument</span><span class="p">(</span><span class="s">&quot;x-dead-letter-routing-key&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ROUTING_KEY</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;.dlq&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">    </span><span class="nd">@Bean</span>
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Binding</span><span class="w"> </span><span class="nf">goodsMergeNotifyBinding</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">BindingBuilder</span>
+<a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">goodsMergeNotifyQueue</span><span class="p">())</span>
+<a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a><span class="w">                </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">goodsMergeNotifyExchange</span><span class="p">())</span>
+<a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a><span class="w">                </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">ROUTING_KEY</span><span class="p">);</span>
+<a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-28" name="__codelineno-12-28" href="#__codelineno-12-28"></a>
+<a id="__codelineno-12-29" name="__codelineno-12-29" href="#__codelineno-12-29"></a><span class="w">    </span><span class="c1">// ========== 死信队列配置 ==========</span>
+<a id="__codelineno-12-30" name="__codelineno-12-30" href="#__codelineno-12-30"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">DLX_EXCHANGE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EXCHANGE</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;.dlx&quot;</span><span class="p">;</span>
+<a id="__codelineno-12-31" name="__codelineno-12-31" href="#__codelineno-12-31"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">DLQ_QUEUE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QUEUE</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;.dlq&quot;</span><span class="p">;</span>
+<a id="__codelineno-12-32" name="__codelineno-12-32" href="#__codelineno-12-32"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">DLQ_ROUTING_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ROUTING_KEY</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;.dlq&quot;</span><span class="p">;</span>
+<a id="__codelineno-12-33" name="__codelineno-12-33" href="#__codelineno-12-33"></a>
+<a id="__codelineno-12-34" name="__codelineno-12-34" href="#__codelineno-12-34"></a><span class="w">    </span><span class="nd">@Bean</span>
+<a id="__codelineno-12-35" name="__codelineno-12-35" href="#__codelineno-12-35"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">DirectExchange</span><span class="w"> </span><span class="nf">goodsMergeNotifyDlExchange</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-36" name="__codelineno-12-36" href="#__codelineno-12-36"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DirectExchange</span><span class="p">(</span><span class="n">DLX_EXCHANGE</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+<a id="__codelineno-12-37" name="__codelineno-12-37" href="#__codelineno-12-37"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-38" name="__codelineno-12-38" href="#__codelineno-12-38"></a>
+<a id="__codelineno-12-39" name="__codelineno-12-39" href="#__codelineno-12-39"></a><span class="w">    </span><span class="nd">@Bean</span>
+<a id="__codelineno-12-40" name="__codelineno-12-40" href="#__codelineno-12-40"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Queue</span><span class="w"> </span><span class="nf">goodsMergeNotifyDlQueue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-41" name="__codelineno-12-41" href="#__codelineno-12-41"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">QueueBuilder</span><span class="p">.</span><span class="na">durable</span><span class="p">(</span><span class="n">DLQ_QUEUE</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-12-42" name="__codelineno-12-42" href="#__codelineno-12-42"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-43" name="__codelineno-12-43" href="#__codelineno-12-43"></a>
+<a id="__codelineno-12-44" name="__codelineno-12-44" href="#__codelineno-12-44"></a><span class="w">    </span><span class="nd">@Bean</span>
+<a id="__codelineno-12-45" name="__codelineno-12-45" href="#__codelineno-12-45"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Binding</span><span class="w"> </span><span class="nf">goodsMergeNotifyDlBinding</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-46" name="__codelineno-12-46" href="#__codelineno-12-46"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">BindingBuilder</span>
+<a id="__codelineno-12-47" name="__codelineno-12-47" href="#__codelineno-12-47"></a><span class="w">                </span><span class="p">.</span><span class="na">bind</span><span class="p">(</span><span class="n">goodsMergeNotifyDlQueue</span><span class="p">())</span>
+<a id="__codelineno-12-48" name="__codelineno-12-48" href="#__codelineno-12-48"></a><span class="w">                </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="n">goodsMergeNotifyDlExchange</span><span class="p">())</span>
+<a id="__codelineno-12-49" name="__codelineno-12-49" href="#__codelineno-12-49"></a><span class="w">                </span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">DLQ_ROUTING_KEY</span><span class="p">);</span>
+<a id="__codelineno-12-50" name="__codelineno-12-50" href="#__codelineno-12-50"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-51" name="__codelineno-12-51" href="#__codelineno-12-51"></a><span class="p">}</span>
+</code></pre></div>
+<details class="tip">
+<summary>序列化方式</summary>
+<p>消息体中包含 <code>GoodsMergeHisDO</code> 和 <code>TDMsgDetailResqDTO</code>，需确保实现了 <code>Serializable</code> 接口，并配置 Jackson 序列化。若对象较大，可考虑仅传递必要字段（如 ID 列表），消费者按需查询完整数据。</p>
+</details>
+<hr />
+<h3 id="4-operatetaskid-rabbitmq">方案4（架构级）：按 operateTaskId 做 RabbitMQ 消费分区<a class="headerlink" href="#4-operatetaskid-rabbitmq" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">预期效果</p>
+<p><strong>彻底消除行锁竞争</strong>，单任务吞吐稳定，不再有多线程互相等待的问题</p>
+</div>
+<p><strong>原理</strong>：RabbitMQ Consistent Hash Exchange 或自定义分区 Key（<code>operateTaskId</code>），确保同一任务的所有消息路由到同一个消费者线程。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1">// 生产端：发送时指定路由键为 operateTaskId</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">rabbitTemplate</span><span class="p">.</span><span class="na">convertAndSend</span><span class="p">(</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="s">&quot;monitor.result.exchange&quot;</span><span class="p">,</span><span class="w">   </span><span class="c1">// exchange</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="n">operateTaskId</span><span class="p">,</span><span class="w">               </span><span class="c1">// routing key（作为分区键）</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span><span class="n">message</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="p">);</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="c1">// 消费端：配置 ConsistentHashQueue</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="nd">@Bean</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="kd">public</span><span class="w"> </span><span class="n">Queue</span><span class="w"> </span><span class="nf">monitorResultQueue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">QueueBuilder</span><span class="p">.</span><span class="na">durable</span><span class="p">(</span><span class="s">&quot;monitor.result.queue&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">        </span><span class="p">.</span><span class="na">withArgument</span><span class="p">(</span><span class="s">&quot;x-consistent-hash-routing-key&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="c1">// 100个虚拟节点</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>代价</strong>：单个大任务的吞吐受限于单线程，但相比当前 44 秒/100 条（且大量等待），串行反而可能更快。</p>
+<details class="tip">
+<summary>与方案1~3的组合</summary>
+<p>方案 4 与方案 1~3 <strong>正交不冲突</strong>，可叠加实施。建议优先落地方案 1（改动最小、效果明确），再逐步推进方案 3 和方案 4。</p>
+</details>
+<hr />
+<h2 id="_6">五、优化路线图<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">优先级</th>
+<th style="text-align: center;">步骤</th>
+<th style="text-align: left;">动作</th>
+<th style="text-align: left;">预期收益</th>
+<th style="text-align: center;">风险</th>
+<th style="text-align: center;">预计工时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">🔴 <strong>紧急</strong></td>
+<td style="text-align: center;">P0-1</td>
+<td style="text-align: left;">His XML 改为 <code>INSERT ... ON DUPLICATE KEY UPDATE</code></td>
+<td style="text-align: left;">写His 27s→~5s</td>
+<td style="text-align: center;">低（唯一键已建立）</td>
+<td style="text-align: center;">0.5h</td>
+</tr>
+<tr>
+<td style="text-align: center;">🔴 <strong>紧急</strong></td>
+<td style="text-align: center;">P0-2</td>
+<td style="text-align: left;">All XML 改为 <code>INSERT ... ON DUPLICATE KEY UPDATE</code></td>
+<td style="text-align: left;">写All 8.6s→~3s</td>
+<td style="text-align: center;">低（唯一键已建立）</td>
+<td style="text-align: center;">0.5h</td>
+</tr>
+<tr>
+<td style="text-align: center;">🔴 <strong>紧急</strong></td>
+<td style="text-align: center;">P0-3</td>
+<td style="text-align: left;">His/All ServiceImpl 改为调用 Mapper</td>
+<td style="text-align: left;">配合P0-1/P0-2生效</td>
+<td style="text-align: center;">低</td>
+<td style="text-align: center;">0.5h</td>
+</tr>
+<tr>
+<td style="text-align: center;">🟡 <strong>建议</strong></td>
+<td style="text-align: center;">P1-1</td>
+<td style="text-align: left;">Expend 表异步化或触发器合并</td>
+<td style="text-align: left;">再降 5~8s</td>
+<td style="text-align: center;">中（需确认业务一致性）</td>
+<td style="text-align: center;">1h</td>
+</tr>
+<tr>
+<td style="text-align: center;">🟡 <strong>建议</strong></td>
+<td style="text-align: center;">P1-2</td>
+<td style="text-align: left;">Feign 调用抽取为 MQ（changeDealState + algorithmDetail + transTDMsgDetails）</td>
+<td style="text-align: left;">消除 3~5s 阻塞</td>
+<td style="text-align: center;">低</td>
+<td style="text-align: center;">2h</td>
+</tr>
+<tr>
+<td style="text-align: center;">🟢 <strong>后续</strong></td>
+<td style="text-align: center;">P2</td>
+<td style="text-align: left;">RabbitMQ Consistent Hash Exchange 按 operateTaskId 分区消费</td>
+<td style="text-align: left;">彻底消除行锁</td>
+<td style="text-align: center;">中（架构改动）</td>
+<td style="text-align: center;">2~3天</td>
+</tr>
+<tr>
+<td style="text-align: center;">🟢 <strong>后续</strong></td>
+<td style="text-align: center;">P3</td>
+<td style="text-align: left;">查 All 表加联合索引 <code>(source_code, goods_id)</code> 覆盖索引</td>
+<td style="text-align: left;">查All 2.4s→~1s</td>
+<td style="text-align: center;">低</td>
+<td style="text-align: center;">0.5h</td>
+</tr>
+</tbody>
+</table>
+<p><strong>立即行动</strong>：P0-1 + P0-2 + P0-3 共 1.5 小时，可将单次处理从 ~44 秒降至约 <strong>15~20 秒</strong>，提升约 <strong>2~3 倍</strong>。</p>
+<hr />
+<h2 id="_7">六、修改对照表<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">文件</th>
+<th style="text-align: left;">修改内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>GoodsMergeHisMapper.xml:660</code></td>
+<td style="text-align: left;"><code>&lt;update&gt;</code> → <code>&lt;insert&gt;</code>，<code>replace into</code> → <code>INSERT ... ON DUPLICATE KEY UPDATE</code>（补充全部字段 UPDATE 语句）</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GoodsMergeAllMapper.xml:482</code></td>
+<td style="text-align: left;"><code>&lt;update&gt;</code> → <code>&lt;insert&gt;</code>，<code>replace into</code> → <code>INSERT ... ON DUPLICATE KEY UPDATE</code>（补充全部字段 UPDATE 语句）</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GoodsMergeHisServiceImpl.java:232</code></td>
+<td style="text-align: left;"><code>this.saveBatch/updateBatchById</code> → <code>goodsMergeHisMapper.saveOrUpdateBatchData</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GoodsMergeAllServiceImpl.java:150</code></td>
+<td style="text-align: left;"><code>this.saveBatch/updateBatchById</code> → <code>goodsMergeAllMapper.saveOrUpdateBatchData</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GoodsMergeInfoServiceImpl.java</code>（新增）</td>
+<td style="text-align: left;">新增 <code>GoodsMergeMsgNotifyDTO</code>、<code>GoodsMergeMsgNotifyConsumer</code>、MQ 配置类</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GoodsMergeInfoServiceImpl.java:211</code></td>
+<td style="text-align: left;"><code>operateFeginService.changeDealState()</code> → <code>rabbitTemplate.convertAndSend(...)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GoodsMergeInfoServiceImpl.java:323/354</code></td>
+<td style="text-align: left;"><code>algorithmDetail</code> + <code>transTDMsgDetails</code> → <code>rabbitTemplate.convertAndSend(...)</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.41 13.41 6 19l1.41-1.42L1.83 12m20.41-6.42L11.66 16.17 7.5 12l-1.43 1.41L11.66 19l12-12M18 7l-1.41-1.42-6.35 6.35 1.42 1.41z"/></svg></span> 文档结束</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "search.highlight"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
